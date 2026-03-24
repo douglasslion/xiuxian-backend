@@ -60,6 +60,11 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', message: '修仙游戏后端服务运行正常' });
 });
 
+// 默认路由
+app.get('/', (req, res) => {
+  res.status(200).json({ status: 'ok', message: '欢迎访问修仙游戏后端服务' });
+});
+
 // 404处理
 app.use('*', (req, res) => {
   res.status(404).json({ status: 'error', message: '接口不存在' });
