@@ -78,9 +78,7 @@ app.use((err, req, res, next) => {
 
 // 启动服务
 const PORT = process.env.PORT || 8002;
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`服务运行在端口 ${PORT}`);
-  });
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`服务运行在 0.0.0.0:${PORT}`);
 });
 
