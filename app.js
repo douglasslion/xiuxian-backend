@@ -46,28 +46,13 @@ app.use('/api/player', playerRoutes);
 app.get('/api/test/new-id', async (req, res) => {
   try {
     console.log('测试获取新玩家ID');
-    const PlayerCounter = require('./models/PlayerCounter');
-
-    const counter = await PlayerCounter.findOneAndUpdate(
-      { counterName: 'playerId' },
-      { $inc: { nextId: 1 }, $set: { updatedAt: new Date() } },
-      { new: true, upsert: true }
-    );
-
-    const newId = counter.nextId - 1;
-
-    console.log('测试分配新玩家ID:', newId);
-
-    res.status(200).json({
-      status: 'success',
-      data: {
-        playerId: newId.toString()
-      }
-    });
+    const users = await mongoose.model('User').find();
+    res.status(200).json({ status: 'success', data: users });
   } catch (error) {
-    console.error('测试获取新玩家ID失败:', error);
-    res.status(500).json({ status: 'error', message: '测试失败' });
+    console.error('查询用户数据失败:', error);
+    res.status(500).json({ status: 'error', message: '查询失败' });
   }
+
 });
 
 // 健康检查
@@ -88,9 +73,9 @@ app.use((err, req, res, next) => {
 
 // 启动服务
 const PORT = process.env.PORT || 8002;
-
 connectDB().then(() => {
   app.listen(PORT, () => {
     console.log(`服务运行在端口 ${PORT}`);
   });
 });
+
