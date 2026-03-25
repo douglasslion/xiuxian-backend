@@ -14,6 +14,11 @@ const realmSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  realmIndex: {
+    type: Number,
+    required: true,
+    min: 0
+  },
   realmLevel: {
     type: Number,
     required: true,

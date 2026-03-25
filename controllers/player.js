@@ -9,6 +9,7 @@ const GameState = require('../models/GameState');
 const Equipment = require('../models/Equipment');
 const Cultivation = require('../models/Cultivation');
 const Realm = require('../models/Realm');
+const realmConfig = require('../config/realmConfig');
 
 /**
  * 获取新玩家ID
@@ -278,13 +279,18 @@ exports.getCharacterInfo = async (req, res) => {
     // 获取境界信息
     let realm = await Realm.findOne({ playerId: id });
     if (!realm) {
-      // 如果不存在，创建默认境界信息
+      // 如果不存在，创建默认境界信息（默认从凡人开始）
+      const defaultRealmIndex = 0; // 凡人
+      const defaultRealm = realmConfig.getRealmInfo(defaultRealmIndex);
+      const defaultCap = realmConfig.calculateCap(defaultRealmIndex, 1);
+      
       realm = new Realm({
         playerId: id,
-        realmName: '练气',
+        realmName: defaultRealm.name,
+        realmIndex: defaultRealmIndex,
         realmLevel: 1,
         cultivationProgress: 0,
-        cultivationCap: 100
+        cultivationCap: defaultCap
       });
       await realm.save();
     }
