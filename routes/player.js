@@ -36,4 +36,13 @@ router.post('/attributes/allocate', playerController.allocateAttributePoints);
 // 刷新跟脚
 router.post('/attributes/refresh-root', playerController.refreshRoot);
 
+// 学习功法
+router.post('/skills/learn', playerController.learnSkill);
+
+// 提升功法熟练度
+router.post('/skills/upgrade', playerController.upgradeSkill);
+
+// 获取玩家功法列表
+router.get('/skills', playerController.getPlayerSkills);
+
 module.exports = router;

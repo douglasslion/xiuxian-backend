@@ -622,6 +622,93 @@
 }
 ```
 
+#### 3.11 学习功法
+
+- **请求方式**: POST
+- **接口路径**: `/api/player/skills/learn`
+- **请求参数**:
+  | 参数名 | 类型 | 必填 | 描述 |
+  |-------|------|------|------|
+  | playerId | string | 是 | 玩家ID |
+  | skillId | string | 是 | 功法ID |
+
+- **响应示例**:
+
+```json
+{
+  "status": "success",
+  "message": "学习功法成功",
+  "data": {
+    "skillId": "skill_001",
+    "name": "基础拳法",
+    "rank": "凡阶",
+    "proficiency": 1,
+    "proficiencyName": "入门"
+  }
+}
+```
+
+#### 3.12 提升功法熟练度
+
+- **请求方式**: POST
+- **接口路径**: `/api/player/skills/upgrade`
+- **请求参数**:
+  | 参数名 | 类型 | 必填 | 描述 |
+  |-------|------|------|------|
+  | playerId | string | 是 | 玩家ID |
+  | skillId | string | 是 | 功法ID |
+
+- **响应示例**:
+
+```json
+{
+  "status": "success",
+  "message": "提升功法熟练度成功",
+  "data": {
+    "skillId": "skill_001",
+    "name": "基础拳法",
+    "proficiency": 2,
+    "proficiencyName": "生疏",
+    "proficiencyMultiplier": 3
+  }
+}
+```
+
+#### 3.13 获取玩家功法列表
+
+- **请求方式**: GET
+- **接口路径**: `/api/player/skills`
+- **请求参数**:
+  | 参数名 | 类型 | 必填 | 描述 |
+  |-------|------|------|------|
+  | playerId | string | 是 | 玩家ID |
+
+- **响应示例**:
+
+```json
+{
+  "status": "success",
+  "data": {
+    "skills": [
+      {
+        "skillId": "skill_001",
+        "name": "基础拳法",
+        "rank": "凡阶",
+        "description": "最基础的拳法，适合初学者练习",
+        "obtainMethod": "初始功法",
+        "proficiency": 1,
+        "proficiencyName": "入门",
+        "proficiencyMultiplier": 1,
+        "attributes": {
+          "attack": 5,
+          "defense": 2
+        }
+      }
+    ]
+  }
+}
+```
+
 ### 4. 其他API
 
 #### 4.1 健康检查

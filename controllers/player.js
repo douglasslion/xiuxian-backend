@@ -10,8 +10,10 @@ const Equipment = require('../models/Equipment');
 const Cultivation = require('../models/Cultivation');
 const Realm = require('../models/Realm');
 const CharacterAttribute = require('../models/CharacterAttribute');
+const Skill = require('../models/Skill');
 const realmConfig = require('../config/realmConfig');
 const rootConfig = require('../config/rootConfig');
+const skillConfig = require('../config/skillConfig');
 const { randomDistributeAttributes } = require('../utils/attributeUtils');
 
 /**
@@ -548,5 +550,146 @@ exports.refreshRoot = async (req, res) => {
   } catch (error) {
     console.error('刷新跟脚失败:', error);
     res.status(500).json({ status: 'error', message: '刷新跟脚失败' });
+  }
+};
+
+/**
+ * 学习功法
+ */
+exports.learnSkill = async (req, res) => {
+  try {
+    const { playerId, skillId } = req.body;
+
+    if (!playerId || !skillId) {
+      return res.status(400).json({ status: 'error', message: '缺少玩家ID或功法ID' });
+    }
+
+    // 检查功法是否存在
+    const skillInfo = skillConfig.getSkillById(skillId);
+    if (!skillInfo) {
+      return res.status(404).json({ status: 'error', message: '功法不存在' });
+    }
+
+    // 检查玩家是否已经学习了该功法
+    let skill = await Skill.findOne({ playerId, skillId });
+    if (skill) {
+      return res.status(400).json({ status: 'error', message: '已经学习过该功法' });
+    }
+
+    // 学习功法
+    skill = new Skill({
+      playerId,
+      skillId,
+      proficiency: 1
+    });
+
+    await skill.save();
+
+    res.status(200).json({
+      status: 'success',
+      message: '学习功法成功',
+      data: {
+        skillId: skill.skillId,
+        name: skillInfo.name,
+        rank: skillInfo.rank,
+        proficiency: skill.proficiency,
+        proficiencyName: skillConfig.getProficiencyInfo(skill.proficiency).name
+      }
+    });
+  } catch (error) {
+    console.error('学习功法失败:', error);
+    res.status(500).json({ status: 'error', message: '学习功法失败' });
+  }
+};
+
+/**
+ * 提升功法熟练度
+ */
+exports.upgradeSkill = async (req, res) => {
+  try {
+    const { playerId, skillId } = req.body;
+
+    if (!playerId || !skillId) {
+      return res.status(400).json({ status: 'error', message: '缺少玩家ID或功法ID' });
+    }
+
+    // 检查玩家是否学习了该功法
+    let skill = await Skill.findOne({ playerId, skillId });
+    if (!skill) {
+      return res.status(404).json({ status: 'error', message: '未学习该功法' });
+    }
+
+    // 检查熟练度是否已经达到上限
+    if (skill.proficiency >= 7) {
+      return res.status(400).json({ status: 'error', message: '功法熟练度已达到上限' });
+    }
+
+    // 提升熟练度
+    skill.proficiency++;
+    skill.updatedAt = new Date();
+
+    await skill.save();
+
+    const skillInfo = skillConfig.getSkillById(skillId);
+    const proficiencyInfo = skillConfig.getProficiencyInfo(skill.proficiency);
+
+    res.status(200).json({
+      status: 'success',
+      message: '提升功法熟练度成功',
+      data: {
+        skillId: skill.skillId,
+        name: skillInfo.name,
+        proficiency: skill.proficiency,
+        proficiencyName: proficiencyInfo.name,
+        proficiencyMultiplier: proficiencyInfo.multiplier
+      }
+    });
+  } catch (error) {
+    console.error('提升功法熟练度失败:', error);
+    res.status(500).json({ status: 'error', message: '提升功法熟练度失败' });
+  }
+};
+
+/**
+ * 获取玩家功法列表
+ */
+exports.getPlayerSkills = async (req, res) => {
+  try {
+    const { playerId } = req.query;
+
+    if (!playerId) {
+      return res.status(400).json({ status: 'error', message: '缺少玩家ID' });
+    }
+
+    // 获取玩家的所有功法
+    const skills = await Skill.find({ playerId });
+
+    // 构建响应数据
+    const skillList = skills.map(skill => {
+      const skillInfo = skillConfig.getSkillById(skill.skillId);
+      const proficiencyInfo = skillConfig.getProficiencyInfo(skill.proficiency);
+      
+      return {
+        skillId: skill.skillId,
+        name: skillInfo.name,
+        rank: skillInfo.rank,
+        description: skillInfo.description,
+        obtainMethod: skillInfo.obtainMethod,
+        proficiency: skill.proficiency,
+        proficiencyName: proficiencyInfo.name,
+        proficiencyMultiplier: proficiencyInfo.multiplier,
+        attributes: skillInfo.attributes
+      };
+    });
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        skills: skillList
+      }
+    });
+  } catch (error) {
+    console.error('获取玩家功法列表失败:', error);
+    res.status(500).json({ status: 'error', message: '获取玩家功法列表失败' });
   }
 };
