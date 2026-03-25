@@ -9,7 +9,10 @@ const GameState = require('../models/GameState');
 const Equipment = require('../models/Equipment');
 const Cultivation = require('../models/Cultivation');
 const Realm = require('../models/Realm');
+const CharacterAttribute = require('../models/CharacterAttribute');
 const realmConfig = require('../config/realmConfig');
+const rootConfig = require('../config/rootConfig');
+const { randomDistributeAttributes } = require('../utils/attributeUtils');
 
 /**
  * 获取新玩家ID
@@ -298,12 +301,44 @@ exports.getCharacterInfo = async (req, res) => {
       await realm.save();
     }
 
+    // 获取角色属性
+    let attributes = await CharacterAttribute.findOne({ playerId: id });
+    if (!attributes) {
+      // 随机分配初始属性点
+      const initialAttributes = randomDistributeAttributes();
+      // 随机获取跟脚
+      const randomRoot = rootConfig.getRandomRoot();
+      
+      attributes = new CharacterAttribute({
+        playerId: id,
+        ...initialAttributes,
+        freePoints: 20,
+        root: randomRoot.name,
+        rootBonus: randomRoot.bonus
+      });
+      await attributes.save();
+    }
+
     // 构建响应数据
     const characterInfo = {
       player: {
         id: player.playerId,
         name: player.name,
         avatar: avatarUrl
+      },
+      attributes: {
+        base: {
+          constitution: attributes.constitution,
+          agility: attributes.agility,
+          luck: attributes.luck,
+          wisdom: attributes.wisdom,
+          freePoints: attributes.freePoints
+        },
+        root: {
+          name: attributes.root,
+          bonus: attributes.rootBonus
+        },
+        derived: attributes.derivedAttributes
       },
       equipment: equipment.map(item => ({
         type: item.type,
@@ -418,5 +453,100 @@ exports.stopCultivation = async (req, res) => {
   } catch (error) {
     console.error('停止修炼失败:', error);
     res.status(500).json({ status: 'error', message: '停止修炼失败' });
+  }
+};
+
+/**
+ * 分配属性点
+ */
+exports.allocateAttributePoints = async (req, res) => {
+  try {
+    const { playerId, constitution = 0, agility = 0, luck = 0, wisdom = 0 } = req.body;
+
+    if (!playerId) {
+      return res.status(400).json({ status: 'error', message: '缺少玩家ID' });
+    }
+
+    // 获取角色属性
+    const attributes = await CharacterAttribute.findOne({ playerId });
+    if (!attributes) {
+      return res.status(404).json({ status: 'error', message: '角色属性不存在' });
+    }
+
+    // 计算需要的属性点
+    const totalPoints = constitution + agility + luck + wisdom;
+    if (totalPoints > attributes.freePoints) {
+      return res.status(400).json({ status: 'error', message: '自由属性点不足' });
+    }
+
+    // 分配属性点
+    attributes.constitution += constitution;
+    attributes.agility += agility;
+    attributes.luck += luck;
+    attributes.wisdom += wisdom;
+    attributes.freePoints -= totalPoints;
+    attributes.updatedAt = new Date();
+
+    await attributes.save();
+
+    res.status(200).json({
+      status: 'success',
+      message: '属性点分配成功',
+      data: {
+        base: {
+          constitution: attributes.constitution,
+          agility: attributes.agility,
+          luck: attributes.luck,
+          wisdom: attributes.wisdom,
+          freePoints: attributes.freePoints
+        },
+        derived: attributes.derivedAttributes
+      }
+    });
+  } catch (error) {
+    console.error('分配属性点失败:', error);
+    res.status(500).json({ status: 'error', message: '分配属性点失败' });
+  }
+};
+
+/**
+ * 刷新跟脚
+ */
+exports.refreshRoot = async (req, res) => {
+  try {
+    const { playerId } = req.body;
+
+    if (!playerId) {
+      return res.status(400).json({ status: 'error', message: '缺少玩家ID' });
+    }
+
+    // 获取角色属性
+    const attributes = await CharacterAttribute.findOne({ playerId });
+    if (!attributes) {
+      return res.status(404).json({ status: 'error', message: '角色属性不存在' });
+    }
+
+    // 随机获取新跟脚
+    const newRoot = rootConfig.getRandomRoot();
+    attributes.root = newRoot.name;
+    attributes.rootBonus = newRoot.bonus;
+    attributes.updatedAt = new Date();
+
+    await attributes.save();
+
+    res.status(200).json({
+      status: 'success',
+      message: '跟脚刷新成功',
+      data: {
+        root: {
+          name: attributes.root,
+          bonus: attributes.rootBonus
+        },
+        derived: attributes.derivedAttributes
+      }
+    });
+  } catch (error) {
+    console.error('刷新跟脚失败:', error);
+    res.status(500).json({ status: 'error', message: '刷新跟脚失败' });
   }
 };

@@ -30,4 +30,10 @@ router.post('/cultivation/start', playerController.startCultivation);
 // 停止修炼
 router.post('/cultivation/stop', playerController.stopCultivation);
 
+// 分配属性点
+router.post('/attributes/allocate', playerController.allocateAttributePoints);
+
+// 刷新跟脚
+router.post('/attributes/refresh-root', playerController.refreshRoot);
+
 module.exports = router;

@@ -451,6 +451,29 @@
       "name": "修仙者",
       "avatar": "http://xiuxian-test.richsh.cn:8002/avatars/861117_1620000000000.jpg"
     },
+    "attributes": {
+      "base": {
+        "constitution": 5,
+        "agility": 5,
+        "luck": 5,
+        "wisdom": 5,
+        "freePoints": 20
+      },
+      "root": {
+        "name": "肉体凡胎",
+        "bonus": 0.15
+      },
+      "derived": {
+        "health": 58,
+        "mana": 29,
+        "spirit": 23,
+        "attack": 17,
+        "defense": 12,
+        "speed": 8.625,
+        "dodge": 4.6,
+        "criticalRate": 2.875
+      }
+    },
     "equipment": [
       {
         "type": "weapon",
@@ -520,6 +543,81 @@
   "data": {
     "isCultivating": false,
     "endTime": "2026-03-25T12:30:00.000Z"
+  }
+}
+```
+
+#### 3.9 分配属性点
+
+- **请求方式**: POST
+- **接口路径**: `/api/player/attributes/allocate`
+- **请求参数**:
+  | 参数名 | 类型 | 必填 | 描述 |
+  |-------|------|------|------|
+  | playerId | string | 是 | 玩家ID |
+  | constitution | number | 否 | 分配到根骨的点数 |
+  | agility | number | 否 | 分配到身法的点数 |
+  | luck | number | 否 | 分配到机缘的点数 |
+  | wisdom | number | 否 | 分配到悟性的点数 |
+
+- **响应示例**:
+
+```json
+{
+  "status": "success",
+  "message": "属性点分配成功",
+  "data": {
+    "base": {
+      "constitution": 7,
+      "agility": 5,
+      "luck": 5,
+      "wisdom": 5,
+      "freePoints": 18
+    },
+    "derived": {
+      "health": 80,
+      "mana": 29,
+      "spirit": 23,
+      "attack": 24,
+      "defense": 17,
+      "speed": 8.625,
+      "dodge": 4.6,
+      "criticalRate": 2.875
+    }
+  }
+}
+```
+
+#### 3.10 刷新跟脚
+
+- **请求方式**: POST
+- **接口路径**: `/api/player/attributes/refresh-root`
+- **请求参数**:
+  | 参数名 | 类型 | 必填 | 描述 |
+  |-------|------|------|------|
+  | playerId | string | 是 | 玩家ID |
+
+- **响应示例**:
+
+```json
+{
+  "status": "success",
+  "message": "跟脚刷新成功",
+  "data": {
+    "root": {
+      "name": "后天精怪",
+      "bonus": 0.45
+    },
+    "derived": {
+      "health": 73,
+      "mana": 36,
+      "spirit": 29,
+      "attack": 22,
+      "defense": 15,
+      "speed": 10.875,
+      "dodge": 5.8,
+      "criticalRate": 3.625
+    }
   }
 }
 ```
