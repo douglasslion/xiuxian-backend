@@ -15,4 +15,10 @@ router.get('/:playerId', playerController.getPlayerState);
 // 保存玩家游戏状态
 router.post('/:playerId', playerController.savePlayerState);
 
+// 获取玩家信息
+router.get('/info', playerController.getPlayerInfo);
+
+// 上传玩家头像
+router.post('/avatar', playerController.uploadAvatar);
+
 module.exports = router;

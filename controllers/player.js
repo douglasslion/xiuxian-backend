@@ -2,6 +2,7 @@
  * 玩家控制器 - 处理玩家ID分配和游戏状态管理
  */
 
+const path = require('path');
 const Player = require('../models/Player');
 const PlayerCounter = require('../models/PlayerCounter');
 const GameState = require('../models/GameState');
@@ -136,5 +137,98 @@ exports.savePlayerState = async (req, res) => {
   } catch (error) {
     console.error('保存玩家游戏状态失败:', error);
     res.status(500).json({ status: 'error', message: '保存玩家游戏状态失败' });
+  }
+};
+
+/**
+ * 获取玩家信息
+ */
+exports.getPlayerInfo = async (req, res) => {
+  try {
+    const { id } = req.query;
+
+    if (!id) {
+      return res.status(400).json({ status: 'error', message: '缺少玩家ID' });
+    }
+
+    const player = await Player.findOne({ playerId: id });
+
+    if (!player) {
+      return res.status(404).json({ status: 'error', message: '玩家不存在' });
+    }
+
+    // 生成完整的头像URL
+    let avatarUrl = player.avatar;
+    if (avatarUrl && !avatarUrl.startsWith('http')) {
+      // 构建完整的头像URL
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      avatarUrl = `${baseUrl}${avatarUrl}`;
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        id: player.playerId,
+        name: player.name,
+        avatar: avatarUrl
+      }
+    });
+  } catch (error) {
+    console.error('获取玩家信息失败:', error);
+    res.status(500).json({ status: 'error', message: '获取玩家信息失败' });
+  }
+};
+
+/**
+ * 上传玩家头像
+ */
+exports.uploadAvatar = async (req, res) => {
+  try {
+    const { playerId } = req.body;
+
+    if (!playerId) {
+      return res.status(400).json({ status: 'error', message: '缺少玩家ID' });
+    }
+
+    // 检查玩家是否存在
+    const player = await Player.findOne({ playerId });
+    if (!player) {
+      return res.status(404).json({ status: 'error', message: '玩家不存在' });
+    }
+
+    // 处理文件上传
+    if (!req.files || !req.files.avatar) {
+      return res.status(400).json({ status: 'error', message: '缺少头像文件' });
+    }
+
+    const avatarFile = req.files.avatar;
+    
+    // 生成文件名
+    const fileName = `${playerId}_${Date.now()}${path.extname(avatarFile.name)}`;
+    const filePath = path.join(__dirname, '../uploads/avatars', fileName);
+
+    // 保存文件
+    await avatarFile.mv(filePath);
+
+    // 更新玩家头像路径
+    const avatarPath = `/avatars/${fileName}`;
+    player.avatar = avatarPath;
+    await player.save();
+
+    // 生成完整的头像URL
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const avatarUrl = `${baseUrl}${avatarPath}`;
+
+    res.status(200).json({
+      status: 'success',
+      message: '头像上传成功',
+      data: {
+        playerId: playerId,
+        avatar: avatarUrl
+      }
+    });
+  } catch (error) {
+    console.error('上传头像失败:', error);
+    res.status(500).json({ status: 'error', message: '上传头像失败' });
   }
 };

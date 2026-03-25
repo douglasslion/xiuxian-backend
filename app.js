@@ -7,6 +7,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const fileUpload = require('express-fileupload');
 
 // 加载环境变量
 dotenv.config();
@@ -18,6 +19,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(fileUpload());
+
+// 静态文件服务
+app.use('/avatars', express.static('uploads/avatars'));
 
 // 数据库连接
 const connectDB = async () => {

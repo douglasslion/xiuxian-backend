@@ -14,6 +14,10 @@ const playerSchema = new mongoose.Schema({
     type: String,
     default: '修仙者'
   },
+  avatar: {
+    type: String,
+    default: ''
+  },
   createdAt: {
     type: Date,
     default: Date.now
