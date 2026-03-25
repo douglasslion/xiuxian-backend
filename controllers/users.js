@@ -8,7 +8,12 @@ const Player = require('../models/Player');
 // 用户注册
 exports.register = async (req, res) => {
   try {
-    const { username, password, email } = req.body;
+    const { username, password } = req.body;
+    
+    // 验证必填字段
+    if (!username || !password) {
+      return res.status(400).json({ status: 'error', message: '用户名和密码为必填项' });
+    }
     
     // 检查用户是否已存在
     const existingUser = await User.findOne({ username });
@@ -19,8 +24,7 @@ exports.register = async (req, res) => {
     // 创建新用户
     const user = new User({
       username,
-      password,
-      email
+      password
     });
     
     await user.save();
@@ -44,8 +48,7 @@ exports.register = async (req, res) => {
       data: {
         user: {
           id: user._id,
-          username: user.username,
-          email: user.email
+          username: user.username
         },
         player: playerInfo,
         needCreateCharacter: !playerInfo
@@ -53,7 +56,17 @@ exports.register = async (req, res) => {
     });
   } catch (error) {
     console.error('注册失败:', error);
-    res.status(500).json({ status: 'error', message: '注册失败' });
+    // 检查是否是MongoDB验证错误
+    if (error.name === 'ValidationError') {
+      const messages = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({ status: 'error', message: messages.join(', ') });
+    }
+    // 检查是否是MongoDB唯一索引错误
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyValue)[0];
+      return res.status(400).json({ status: 'error', message: `${field === 'username' ? '用户名' : '邮箱'}已存在` });
+    }
+    res.status(500).json({ status: 'error', message: '注册失败，请稍后重试' });
   }
 };
 
@@ -65,13 +78,13 @@ exports.login = async (req, res) => {
     // 查找用户
     const user = await User.findOne({ username });
     if (!user) {
-      return res.status(400).json({ status: 'error', message: '用户名或密码错误' });
+      return res.status(400).json({ status: 'error', message: '该账号尚未注册，请注册后再登录。' });
     }
     
     // 验证密码
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) {
-      return res.status(400).json({ status: 'error', message: '用户名或密码错误' });
+      return res.status(400).json({ status: 'error', message: '密码错误' });
     }
     
     // 检查是否有角色信息
@@ -93,8 +106,7 @@ exports.login = async (req, res) => {
       data: {
         user: {
           id: user._id,
-          username: user.username,
-          email: user.email
+          username: user.username
         },
         player: playerInfo,
         needCreateCharacter: !playerInfo
