@@ -64,7 +64,7 @@ exports.register = async (req, res) => {
     // 检查是否是MongoDB唯一索引错误
     if (error.code === 11000) {
       const field = Object.keys(error.keyValue)[0];
-      return res.status(400).json({ status: 'error', message: `${field === 'username' ? '用户名' : '邮箱'}已存在` });
+      return res.status(400).json({ status: 'error', message: `${field === 'username' ? '用户名' : field}已存在` });
     }
     res.status(500).json({ status: 'error', message: '注册失败，请稍后重试' });
   }

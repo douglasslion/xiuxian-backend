@@ -82,9 +82,21 @@ app.use((err, req, res, next) => {
   res.status(500).json({ status: 'error', message: '服务器内部错误' });
 });
 
-// 启动服务为了提示GitHub添加的信息
+// 启动服务
 const PORT = process.env.PORT || 8002;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`服务运行在 0.0.0.0:${PORT}`);
-});
+
+// 连接数据库并启动服务
+const startServer = async () => {
+  try {
+    await connectDB();
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`服务运行在 0.0.0.0:${PORT}`);
+    });
+  } catch (error) {
+    console.error('启动服务失败:', error);
+    process.exit(1);
+  }
+};
+
+startServer();
 
