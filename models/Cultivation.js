@@ -18,6 +18,18 @@ const cultivationSchema = new mongoose.Schema({
     type: Number,
     default: 1.0
   },
+  baseCultivation: {
+    type: Number,
+    default: 10
+  },
+  rootBonus: {
+    type: Number,
+    default: 1.0
+  },
+  skillBonus: {
+    type: Number,
+    default: 1.0
+  },
   startTime: {
     type: Date
   },
@@ -32,6 +44,11 @@ const cultivationSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
+});
+
+// 计算实时修炼效率
+cultivationSchema.virtual('realTimeEfficiency').get(function() {
+  return this.baseCultivation * (this.rootBonus + this.skillBonus);
 });
 
 const Cultivation = mongoose.model('Cultivation', cultivationSchema);

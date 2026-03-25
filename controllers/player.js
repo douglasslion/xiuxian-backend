@@ -271,7 +271,10 @@ exports.getCharacterInfo = async (req, res) => {
       cultivation = new Cultivation({
         playerId: id,
         isCultivating: false,
-        efficiency: 1.0
+        efficiency: 1.0,
+        baseCultivation: 10,
+        rootBonus: 1.0,
+        skillBonus: 1.0
       });
       await cultivation.save();
     }
@@ -311,7 +314,11 @@ exports.getCharacterInfo = async (req, res) => {
       })),
       cultivation: {
         isCultivating: cultivation.isCultivating,
-        efficiency: cultivation.efficiency
+        efficiency: cultivation.efficiency,
+        baseCultivation: cultivation.baseCultivation,
+        rootBonus: cultivation.rootBonus,
+        skillBonus: cultivation.skillBonus,
+        realTimeEfficiency: cultivation.realTimeEfficiency
       },
       realm: {
         realmName: realm.realmName,
@@ -329,5 +336,87 @@ exports.getCharacterInfo = async (req, res) => {
   } catch (error) {
     console.error('获取角色完整信息失败:', error);
     res.status(500).json({ status: 'error', message: '获取角色完整信息失败' });
+  }
+};
+
+/**
+ * 开始修炼
+ */
+exports.startCultivation = async (req, res) => {
+  try {
+    const { playerId } = req.body;
+
+    if (!playerId) {
+      return res.status(400).json({ status: 'error', message: '缺少玩家ID' });
+    }
+
+    // 获取或创建修炼状态
+    let cultivation = await Cultivation.findOne({ playerId });
+    if (!cultivation) {
+      cultivation = new Cultivation({
+        playerId,
+        isCultivating: true,
+        efficiency: 1.0,
+        baseCultivation: 10,
+        rootBonus: 1.0,
+        skillBonus: 1.0,
+        startTime: new Date()
+      });
+    } else {
+      cultivation.isCultivating = true;
+      cultivation.startTime = new Date();
+      cultivation.endTime = null;
+    }
+
+    await cultivation.save();
+
+    res.status(200).json({
+      status: 'success',
+      message: '开始修炼成功',
+      data: {
+        isCultivating: true,
+        startTime: cultivation.startTime,
+        realTimeEfficiency: cultivation.realTimeEfficiency
+      }
+    });
+  } catch (error) {
+    console.error('开始修炼失败:', error);
+    res.status(500).json({ status: 'error', message: '开始修炼失败' });
+  }
+};
+
+/**
+ * 停止修炼
+ */
+exports.stopCultivation = async (req, res) => {
+  try {
+    const { playerId } = req.body;
+
+    if (!playerId) {
+      return res.status(400).json({ status: 'error', message: '缺少玩家ID' });
+    }
+
+    // 获取修炼状态
+    const cultivation = await Cultivation.findOne({ playerId });
+    if (!cultivation) {
+      return res.status(404).json({ status: 'error', message: '修炼状态不存在' });
+    }
+
+    cultivation.isCultivating = false;
+    cultivation.endTime = new Date();
+
+    await cultivation.save();
+
+    res.status(200).json({
+      status: 'success',
+      message: '停止修炼成功',
+      data: {
+        isCultivating: false,
+        endTime: cultivation.endTime
+      }
+    });
+  } catch (error) {
+    console.error('停止修炼失败:', error);
+    res.status(500).json({ status: 'error', message: '停止修炼失败' });
   }
 };

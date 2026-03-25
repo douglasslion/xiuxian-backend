@@ -24,4 +24,10 @@ router.post('/avatar', playerController.uploadAvatar);
 // 获取角色完整信息
 router.get('/character-info', playerController.getCharacterInfo);
 
+// 开始修炼
+router.post('/cultivation/start', playerController.startCultivation);
+
+// 停止修炼
+router.post('/cultivation/stop', playerController.stopCultivation);
+
 module.exports = router;

@@ -462,15 +462,64 @@
     ],
     "cultivation": {
       "isCultivating": false,
-      "efficiency": 1
+      "efficiency": 1,
+      "baseCultivation": 10,
+      "rootBonus": 1,
+      "skillBonus": 1,
+      "realTimeEfficiency": 20
     },
     "realm": {
-      "realmName": "练气",
+      "realmName": "凡人",
       "realmLevel": 1,
       "cultivationProgress": 0,
       "cultivationCap": 100,
       "progressPercentage": 0
     }
+  }
+}
+```
+
+#### 3.7 开始修炼
+
+- **请求方式**: POST
+- **接口路径**: `/api/player/cultivation/start`
+- **请求参数**:
+  | 参数名 | 类型 | 必填 | 描述 |
+  |-------|------|------|------|
+  | playerId | string | 是 | 玩家ID |
+
+- **响应示例**:
+
+```json
+{
+  "status": "success",
+  "message": "开始修炼成功",
+  "data": {
+    "isCultivating": true,
+    "startTime": "2026-03-25T12:00:00.000Z",
+    "realTimeEfficiency": 20
+  }
+}
+```
+
+#### 3.8 停止修炼
+
+- **请求方式**: POST
+- **接口路径**: `/api/player/cultivation/stop`
+- **请求参数**:
+  | 参数名 | 类型 | 必填 | 描述 |
+  |-------|------|------|------|
+  | playerId | string | 是 | 玩家ID |
+
+- **响应示例**:
+
+```json
+{
+  "status": "success",
+  "message": "停止修炼成功",
+  "data": {
+    "isCultivating": false,
+    "endTime": "2026-03-25T12:30:00.000Z"
   }
 }
 ```
