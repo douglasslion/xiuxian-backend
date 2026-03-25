@@ -1,0 +1,6 @@
+id,name,rank,description,obtainMethod,attributes
+skill_1,引气诀,凡阶,凡人入门，滋养肉身提气血,商店,{"health": 5}
+skill_2,御风术,凡阶,提升材料掉落率,商店,{"materialRate": 5}
+skill_3,静心诀,凡阶,提升心力,商店,{"spirit": 5}
+skill_4,纳运诀,凡阶,提升幸运值,商店,{"luck": 5}
+skill_5,灵葫锻体诀,灵阶,

@@ -14,6 +14,7 @@ const Skill = require('../models/Skill');
 const realmConfig = require('../config/realmConfig');
 const rootConfig = require('../config/rootConfig');
 const skillConfig = require('../config/skillConfig');
+const rankColorConfig = require('../config/rankColorConfig');
 const { randomDistributeAttributes } = require('../utils/attributeUtils');
 
 /**
@@ -321,6 +322,28 @@ exports.getCharacterInfo = async (req, res) => {
       await attributes.save();
     }
 
+    // 获取玩家的功法列表
+    const skills = await Skill.find({ playerId: id });
+    const skillList = skills.map(skill => {
+      const skillInfo = skillConfig.getSkillById(skill.skillId);
+      const proficiencyInfo = skillConfig.getProficiencyInfo(skill.proficiency);
+      const rankColor = rankColorConfig.getColorByLevel(skillInfo.rankLevel);
+      
+      return {
+        skillId: skill.skillId,
+        name: skillInfo.name,
+        rank: skillInfo.rank,
+        rankLevel: skillInfo.rankLevel,
+        rankColor: rankColor,
+        description: skillInfo.description,
+        obtainMethod: skillInfo.obtainMethod,
+        proficiency: skill.proficiency,
+        proficiencyName: proficiencyInfo.name,
+        proficiencyMultiplier: proficiencyInfo.multiplier,
+        attributes: skillInfo.attributes
+      };
+    });
+
     // 构建响应数据
     const characterInfo = {
       player: {
@@ -338,7 +361,9 @@ exports.getCharacterInfo = async (req, res) => {
         },
         root: {
           name: attributes.root,
-          bonus: attributes.rootBonus
+          bonus: attributes.rootBonus,
+          rankLevel: rootConfig.getRootByName(attributes.root)?.rankLevel || 1,
+          rankColor: rankColorConfig.getColorByLevel(rootConfig.getRootByName(attributes.root)?.rankLevel || 1)
         },
         derived: attributes.derivedAttributes
       },
@@ -346,9 +371,11 @@ exports.getCharacterInfo = async (req, res) => {
         type: item.type,
         name: item.name,
         quality: item.quality,
+        qualityColor: rankColorConfig.getColorByLevel(item.quality),
         level: item.level,
         attributes: item.attributes
       })),
+      skills: skillList,
       cultivation: {
         isCultivating: cultivation.isCultivating,
         efficiency: cultivation.efficiency,
@@ -668,11 +695,14 @@ exports.getPlayerSkills = async (req, res) => {
     const skillList = skills.map(skill => {
       const skillInfo = skillConfig.getSkillById(skill.skillId);
       const proficiencyInfo = skillConfig.getProficiencyInfo(skill.proficiency);
+      const rankColor = rankColorConfig.getColorByLevel(skillInfo.rankLevel);
       
       return {
         skillId: skill.skillId,
         name: skillInfo.name,
         rank: skillInfo.rank,
+        rankLevel: skillInfo.rankLevel,
+        rankColor: rankColor,
         description: skillInfo.description,
         obtainMethod: skillInfo.obtainMethod,
         proficiency: skill.proficiency,

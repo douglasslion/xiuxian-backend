@@ -32,6 +32,7 @@ const skillConfig = {
       id: 'skill_001',
       name: '基础拳法',
       rank: '凡阶',
+      rankLevel: 1,
       description: '最基础的拳法，适合初学者练习',
       obtainMethod: '初始功法',
       attributes: {
@@ -43,6 +44,7 @@ const skillConfig = {
       id: 'skill_002',
       name: '清风剑法',
       rank: '灵阶',
+      rankLevel: 2,
       description: '轻盈灵动的剑法，速度快',
       obtainMethod: '新手村任务',
       attributes: {
@@ -54,6 +56,7 @@ const skillConfig = {
       id: 'skill_003',
       name: '金钟罩',
       rank: '黄阶',
+      rankLevel: 3,
       description: '提升防御力的功法',
       obtainMethod: '帮派贡献兑换',
       attributes: {
@@ -65,6 +68,7 @@ const skillConfig = {
       id: 'skill_004',
       name: '御气飞行',
       rank: '玄阶',
+      rankLevel: 4,
       description: '能够御气飞行的高级功法',
       obtainMethod: '秘境探索',
       attributes: {
@@ -76,6 +80,7 @@ const skillConfig = {
       id: 'skill_005',
       name: '九阴真经',
       rank: '地阶',
+      rankLevel: 5,
       description: '强大的内功心法',
       obtainMethod: '副本掉落',
       attributes: {
@@ -88,6 +93,7 @@ const skillConfig = {
       id: 'skill_006',
       name: '九阳神功',
       rank: '天阶',
+      rankLevel: 6,
       description: '至阳至刚的神功',
       obtainMethod: '世界boss掉落',
       attributes: {
@@ -100,6 +106,7 @@ const skillConfig = {
       id: 'skill_007',
       name: '混沌决',
       rank: '圣阶',
+      rankLevel: 7,
       description: '传说中的混沌功法',
       obtainMethod: '活动获取',
       attributes: {
