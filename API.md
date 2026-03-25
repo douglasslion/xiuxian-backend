@@ -431,6 +431,50 @@
 }
 ```
 
+#### 3.6 获取角色完整信息
+
+- **请求方式**: GET
+- **接口路径**: `/api/player/character-info`
+- **请求参数**:
+  | 参数名 | 类型 | 必填 | 描述 |
+  |-------|------|------|------|
+  | id | string | 是 | 玩家ID |
+
+- **响应示例**:
+
+```json
+{
+  "status": "success",
+  "data": {
+    "player": {
+      "id": "861117",
+      "name": "修仙者",
+      "avatar": "http://xiuxian-test.richsh.cn:8002/avatars/861117_1620000000000.jpg"
+    },
+    "equipment": [
+      {
+        "type": "weapon",
+        "name": "木剑",
+        "quality": 1,
+        "level": 0,
+        "attributes": {}
+      }
+    ],
+    "cultivation": {
+      "isCultivating": false,
+      "efficiency": 1
+    },
+    "realm": {
+      "realmName": "练气",
+      "realmLevel": 1,
+      "cultivationProgress": 0,
+      "cultivationCap": 100,
+      "progressPercentage": 0
+    }
+  }
+}
+```
+
 ### 4. 其他API
 
 #### 4.1 健康检查

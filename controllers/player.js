@@ -6,6 +6,9 @@ const path = require('path');
 const Player = require('../models/Player');
 const PlayerCounter = require('../models/PlayerCounter');
 const GameState = require('../models/GameState');
+const Equipment = require('../models/Equipment');
+const Cultivation = require('../models/Cultivation');
+const Realm = require('../models/Realm');
 
 /**
  * 获取新玩家ID
@@ -230,5 +233,95 @@ exports.uploadAvatar = async (req, res) => {
   } catch (error) {
     console.error('上传头像失败:', error);
     res.status(500).json({ status: 'error', message: '上传头像失败' });
+  }
+};
+
+/**
+ * 获取角色完整信息
+ */
+exports.getCharacterInfo = async (req, res) => {
+  try {
+    const { id } = req.query;
+
+    if (!id) {
+      return res.status(400).json({ status: 'error', message: '缺少玩家ID' });
+    }
+
+    // 获取玩家基本信息
+    const player = await Player.findOne({ playerId: id });
+    if (!player) {
+      return res.status(404).json({ status: 'error', message: '玩家不存在' });
+    }
+
+    // 生成完整的头像URL
+    let avatarUrl = player.avatar;
+    if (avatarUrl && !avatarUrl.startsWith('http')) {
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      avatarUrl = `${baseUrl}${avatarUrl}`;
+    }
+
+    // 获取玩家装备
+    const equipment = await Equipment.find({ playerId: id });
+
+    // 获取修炼状态
+    let cultivation = await Cultivation.findOne({ playerId: id });
+    if (!cultivation) {
+      // 如果不存在，创建默认修炼状态
+      cultivation = new Cultivation({
+        playerId: id,
+        isCultivating: false,
+        efficiency: 1.0
+      });
+      await cultivation.save();
+    }
+
+    // 获取境界信息
+    let realm = await Realm.findOne({ playerId: id });
+    if (!realm) {
+      // 如果不存在，创建默认境界信息
+      realm = new Realm({
+        playerId: id,
+        realmName: '练气',
+        realmLevel: 1,
+        cultivationProgress: 0,
+        cultivationCap: 100
+      });
+      await realm.save();
+    }
+
+    // 构建响应数据
+    const characterInfo = {
+      player: {
+        id: player.playerId,
+        name: player.name,
+        avatar: avatarUrl
+      },
+      equipment: equipment.map(item => ({
+        type: item.type,
+        name: item.name,
+        quality: item.quality,
+        level: item.level,
+        attributes: item.attributes
+      })),
+      cultivation: {
+        isCultivating: cultivation.isCultivating,
+        efficiency: cultivation.efficiency
+      },
+      realm: {
+        realmName: realm.realmName,
+        realmLevel: realm.realmLevel,
+        cultivationProgress: realm.cultivationProgress,
+        cultivationCap: realm.cultivationCap,
+        progressPercentage: realm.progressPercentage
+      }
+    };
+
+    res.status(200).json({
+      status: 'success',
+      data: characterInfo
+    });
+  } catch (error) {
+    console.error('获取角色完整信息失败:', error);
+    res.status(500).json({ status: 'error', message: '获取角色完整信息失败' });
   }
 };

@@ -21,4 +21,7 @@ router.get('/info', playerController.getPlayerInfo);
 // 上传玩家头像
 router.post('/avatar', playerController.uploadAvatar);
 
+// 获取角色完整信息
+router.get('/character-info', playerController.getCharacterInfo);
+
 module.exports = router;
