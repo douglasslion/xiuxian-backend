@@ -23,6 +23,7 @@ app.use(fileUpload());
 
 // 静态文件服务
 app.use('/avatars', express.static('uploads/avatars'));
+app.use(express.static('public'));
 
 // 数据库连接
 const connectDB = async () => {

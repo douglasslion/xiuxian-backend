@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修仙游戏API测试</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #4a6fa5;
+            margin-bottom: 30px;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            color: #4a6fa5;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #4a6fa5;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        button {
+            background-color: #4a6fa5;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        
+        button:hover {
+            background-color: #3a5a85;
+        }
+        
+        .response {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        
+        .success {
+            border-left: 4px solid #4caf50;
+        }
+        
+        .error {
+            border-left: 4px solid #f44336;
+        }
+        
+        .nav {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .nav button {
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>修仙游戏API测试平台</h1>
+        
+        <div class="nav">
+            <button onclick="showSection('auth')">用户认证</button>
+            <button onclick="showSection('character')">角色管理</button>
+            <button onclick="showSection('player')">玩家信息</button>
+            <button onclick="showSection('game')">游戏状态</button>
+            <button onclick="showSection('avatar')">头像上传</button>
+        </div>
+        
+        <!-- 用户认证部分 -->
+        <div id="auth" class="section">
+            <h2>用户认证</h2>
+            
+            <h3>注册</h3>
+            <div class="form-group">
+                <label for="register-username">用户名</label>
+                <input type="text" id="register-username" placeholder="请输入用户名">
+            </div>
+            <div class="form-group">
+                <label for="register-password">密码</label>
+                <input type="password" id="register-password" placeholder="请输入密码">
+            </div>
+            <div class="form-group">
+                <label for="register-email">邮箱</label>
+                <input type="email" id="register-email" placeholder="请输入邮箱">
+            </div>
+            <button onclick="register()">注册</button>
+            <div id="register-response" class="response"></div>
+            
+            <h3>登录</h3>
+            <div class="form-group">
+                <label for="login-username">用户名</label>
+                <input type="text" id="login-username" placeholder="请输入用户名">
+            </div>
+            <div class="form-group">
+                <label for="login-password">密码</label>
+                <input type="password" id="login-password" placeholder="请输入密码">
+            </div>
+            <button onclick="login()">登录</button>
+            <div id="login-response" class="response"></div>
+        </div>
+        
+        <!-- 角色管理部分 -->
+        <div id="character" class="section" style="display: none;">
+            <h2>角色管理</h2>
+            
+            <h3>创建角色</h3>
+            <div class="form-group">
+                <label for="character-userId">用户ID</label>
+                <input type="text" id="character-userId" placeholder="请输入用户ID">
+            </div>
+            <div class="form-group">
+                <label for="character-name">角色名称</label>
+                <input type="text" id="character-name" placeholder="请输入角色名称">
+            </div>
+            <div class="form-group">
+                <label for="character-avatar">头像URL</label>
+                <input type="text" id="character-avatar" placeholder="请输入头像URL">
+            </div>
+            <button onclick="createCharacter()">创建角色</button>
+            <div id="character-response" class="response"></div>
+        </div>
+        
+        <!-- 玩家信息部分 -->
+        <div id="player" class="section" style="display: none;">
+            <h2>玩家信息</h2>
+            
+            <h3>获取玩家信息</h3>
+            <div class="form-group">
+                <label for="player-id">玩家ID</label>
+                <input type="text" id="player-id" placeholder="请输入玩家ID">
+            </div>
+            <button onclick="getPlayerInfo()">获取信息</button>
+            <div id="player-response" class="response"></div>
+            
+            <h3>获取新玩家ID</h3>
+            <button onclick="getNewPlayerId()">获取新ID</button>
+            <div id="new-id-response" class="response"></div>
+        </div>
+        
+        <!-- 游戏状态部分 -->
+        <div id="game" class="section" style="display: none;">
+            <h2>游戏状态</h2>
+            
+            <h3>获取游戏状态</h3>
+            <div class="form-group">
+                <label for="game-userId">用户ID</label>
+                <input type="text" id="game-userId" placeholder="请输入用户ID">
+            </div>
+            <button onclick="getGameState()">获取状态</button>
+            <div id="game-state-response" class="response"></div>
+            
+            <h3>保存游戏状态</h3>
+            <div class="form-group">
+                <label for="save-userId">用户ID</label>
+                <input type="text" id="save-userId" placeholder="请输入用户ID">
+            </div>
+            <div class="form-group">
+                <label for="save-state">游戏状态</label>
+                <textarea id="save-state" rows="5" placeholder="请输入游戏状态JSON"></textarea>
+            </div>
+            <button onclick="saveGameState()">保存状态</button>
+            <div id="save-state-response" class="response"></div>
+            
+            <h3>获取游戏配置</h3>
+            <button onclick="getGameConfig()">获取配置</button>
+            <div id="game-config-response" class="response"></div>
+            
+            <h3>获取排行榜</h3>
+            <button onclick="getRanking()">获取排行榜</button>
+            <div id="ranking-response" class="response"></div>
+        </div>
+        
+        <!-- 头像上传部分 -->
+        <div id="avatar" class="section" style="display: none;">
+            <h2>头像上传</h2>
+            
+            <h3>上传头像</h3>
+            <div class="form-group">
+                <label for="avatar-playerId">玩家ID</label>
+                <input type="text" id="avatar-playerId" placeholder="请输入玩家ID">
+            </div>
+            <div class="form-group">
+                <label for="avatar-file">选择头像文件</label>
+                <input type="file" id="avatar-file">
+            </div>
+            <button onclick="uploadAvatar()">上传头像</button>
+            <div id="avatar-response" class="response"></div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE_URL = 'http://localhost:8002/api';
+        
+        function showSection(sectionId) {
+            // 隐藏所有部分
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+            // 显示选中的部分
+            document.getElementById(sectionId).style.display = 'block';
+        }
+        
+        function displayResponse(elementId, data, isError = false) {
+            const element = document.getElementById(elementId);
+            element.textContent = JSON.stringify(data, null, 2);
+            element.className = `response ${isError ? 'error' : 'success'}`;
+        }
+        
+        // 用户注册
+        async function register() {
+            const username = document.getElementById('register-username').value;
+            const password = document.getElementById('register-password').value;
+            const email = document.getElementById('register-email').value;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password, email })
+                });
+                
+                const data = await response.json();
+                displayResponse('register-response', data, !data.status === 'success');
+            } catch (error) {
+                displayResponse('register-response', { status: 'error', message: error.message }, true);
+            }
+        }
+        
+        // 用户登录
+        async function login() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                displayResponse('login-response', data, !data.status === 'success');
+            } catch (error) {
+                displayResponse('login-response', { status: 'error', message: error.message }, true);
+            }
+        }
+        
+        // 创建角色
+        async function createCharacter() {
+            const userId = document.getElementById('character-userId').value;
+            const name = document.getElementById('character-name').value;
+            const avatar = document.getElementById('character-avatar').value;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/character`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId, name, avatar })
+                });
+                
+                const data = await response.json();
+                displayResponse('character-response', data, !data.status === 'success');
+            } catch (error) {
+                displayResponse('character-response', { status: 'error', message: error.message }, true);
+            }
+        }
+        
+        // 获取玩家信息
+        async function getPlayerInfo() {
+            const id = document.getElementById('player-id').value;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/player/info?id=${id}`);
+                const data = await response.json();
+                displayResponse('player-response', data, !data.status === 'success');
+            } catch (error) {
+                displayResponse('player-response', { status: 'error', message: error.message }, true);
+            }
+        }
+        
+        // 获取新玩家ID
+        async function getNewPlayerId() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/player/new-id`);
+                const data = await response.json();
+                displayResponse('new-id-response', data, !data.status === 'success');
+            } catch (error) {
+                displayResponse('new-id-response', { status: 'error', message: error.message }, true);
+            }
+        }
+        
+        // 获取游戏状态
+        async function getGameState() {
+            const userId = document.getElementById('game-userId').value;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/game/state?userId=${userId}`);
+                const data = await response.json();
+                displayResponse('game-state-response', data, !data.status === 'success');
+            } catch (error) {
+                displayResponse('game-state-response', { status: 'error', message: error.message }, true);
+            }
+        }
+        
+        // 保存游戏状态
+        async function saveGameState() {
+            const userId = document.getElementById('save-userId').value;
+            const state = document.getElementById('save-state').value;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/game/state`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId, state: JSON.parse(state) })
+                });
+                
+                const data = await response.json();
+                displayResponse('save-state-response', data, !data.status === 'success');
+            } catch (error) {
+                displayResponse('save-state-response', { status: 'error', message: error.message }, true);
+            }
+        }
+        
+        // 获取游戏配置
+        async function getGameConfig() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/game/config`);
+                const data = await response.json();
+                displayResponse('game-config-response', data, !data.status === 'success');
+            } catch (error) {
+                displayResponse('game-config-response', { status: 'error', message: error.message }, true);
+            }
+        }
+        
+        // 获取排行榜
+        async function getRanking() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/game/ranking`);
+                const data = await response.json();
+                displayResponse('ranking-response', data, !data.status === 'success');
+            } catch (error) {
+                displayResponse('ranking-response', { status: 'error', message: error.message }, true);
+            }
+        }
+        
+        // 上传头像
+        async function uploadAvatar() {
+            const playerId = document.getElementById('avatar-playerId').value;
+            const file = document.getElementById('avatar-file').files[0];
+            
+            if (!file) {
+                displayResponse('avatar-response', { status: 'error', message: '请选择文件' }, true);
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('playerId', playerId);
+            formData.append('avatar', file);
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/player/avatar`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                displayResponse('avatar-response', data, !data.status === 'success');
+            } catch (error) {
+                displayResponse('avatar-response', { status: 'error', message: error.message }, true);
+            }
+        }
+    </script>
+</body>
+</html>

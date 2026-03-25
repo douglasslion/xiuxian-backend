@@ -18,4 +18,7 @@ router.get('/profile', userController.getProfile);
 // 更新用户信息
 router.put('/profile', userController.updateProfile);
 
+// 创建角色
+router.post('/character', userController.createCharacter);
+
 module.exports = router;
