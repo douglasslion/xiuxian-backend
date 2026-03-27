@@ -185,7 +185,7 @@ exports.createCharacter = async (req, res) => {
     const player = new Player({
       playerId,
       name,
-      avatar: avatar || '',
+      avatar: avatar || '/avatars/nan_shaolinsi.png',
       lastLoginAt: new Date()
     });
     
