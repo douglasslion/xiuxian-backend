@@ -171,7 +171,7 @@
             content.innerHTML = '<div class="loading">加载中...</div>';
             
             try {
-                const response = await fetch('/api/admin/users');
+                const response = await fetch('https://xiuxian-test.richsh.cn/api/admin/users');
                 const data = await response.json();
                 
                 if (data.status === 'success') {
@@ -225,7 +225,7 @@
             content.innerHTML = '<div class="loading">加载中...</div>';
             
             try {
-                const response = await fetch('/api/admin/characters');
+                const response = await fetch('https://xiuxian-test.richsh.cn/api/admin/characters');
                 const data = await response.json();
                 
                 if (data.status === 'success') {
@@ -279,7 +279,7 @@
             content.innerHTML = '<div class="loading">加载中...</div>';
             
             try {
-                const response = await fetch('/api/admin/game-states');
+                const response = await fetch('https://xiuxian-test.richsh.cn/api/admin/game-states');
                 const data = await response.json();
                 
                 if (data.status === 'success') {
@@ -330,7 +330,7 @@
             content.innerHTML = `<div class="loading">加载角色详情中...</div>`;
             
             try {
-                const response = await fetch(`/api/player/character-info?id=${playerId}`);
+                const response = await fetch(`https://xiuxian-test.richsh.cn/api/player/character-info?id=${playerId}`);
                 const data = await response.json();
                 
                 if (data.status === 'success') {
