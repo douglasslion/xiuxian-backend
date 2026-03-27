@@ -346,28 +346,28 @@
                                 '无头像'
                             }</p>
                             <p><strong>境界:</strong> ${characterInfo.realm.realmName} ${characterInfo.realm.realmLevel}层</p>
-                            <p><strong>修为进度:</strong> ${characterInfo.realm.cultivationProgress}/${characterInfo.realm.cultivationCap} (${characterInfo.realm.percentage}%)</p>
-                            <p><strong>跟脚:</strong> ${characterInfo.root.name} (${characterInfo.root.bonus * 100}% 加成)</p>
+                            <p><strong>修为进度:</strong> ${characterInfo.realm.cultivationProgress}/${characterInfo.realm.cultivationCap} (${characterInfo.realm.progressPercentage}%)</p>
+                            <p><strong>跟脚:</strong> ${characterInfo.attributes.root.name} (${characterInfo.attributes.root.bonus * 100}% 加成)</p>
                             <p><strong>修炼状态:</strong> ${characterInfo.cultivation.isCultivating ? '修炼中' : '未修炼'}</p>
                             <p><strong>修炼效率:</strong> ${characterInfo.cultivation.efficiency}x</p>
                             <p><strong>基础属性:</strong></p>
                             <ul>
-                                <li>根骨: ${characterInfo.attributes.constitution}</li>
-                                <li>身法: ${characterInfo.attributes.agility}</li>
-                                <li>机缘: ${characterInfo.attributes.luck}</li>
-                                <li>悟性: ${characterInfo.attributes.wisdom}</li>
-                                <li>自由属性点: ${characterInfo.attributes.freePoints}</li>
+                                <li>根骨: ${characterInfo.attributes.base.constitution}</li>
+                                <li>身法: ${characterInfo.attributes.base.agility}</li>
+                                <li>机缘: ${characterInfo.attributes.base.luck}</li>
+                                <li>悟性: ${characterInfo.attributes.base.wisdom}</li>
+                                <li>自由属性点: ${characterInfo.attributes.base.freePoints}</li>
                             </ul>
                             <p><strong>衍生属性:</strong></p>
                             <ul>
-                                <li>气血: ${characterInfo.derivedAttributes.health}</li>
-                                <li>灵力: ${characterInfo.derivedAttributes.mana}</li>
-                                <li>神识: ${characterInfo.derivedAttributes.mental}</li>
-                                <li>攻击: ${characterInfo.derivedAttributes.attack}</li>
-                                <li>防御: ${characterInfo.derivedAttributes.defense}</li>
-                                <li>速度: ${characterInfo.derivedAttributes.speed}</li>
-                                <li>闪避: ${characterInfo.derivedAttributes.dodge}</li>
-                                <li>暴击率: ${characterInfo.derivedAttributes.criticalRate}%</li>
+                                <li>气血: ${characterInfo.attributes.derived.health}</li>
+                                <li>灵力: ${characterInfo.attributes.derived.mana}</li>
+                                <li>神识: ${characterInfo.attributes.derived.mental}</li>
+                                <li>攻击: ${characterInfo.attributes.derived.attack}</li>
+                                <li>防御: ${characterInfo.attributes.derived.defense}</li>
+                                <li>速度: ${characterInfo.attributes.derived.speed}</li>
+                                <li>闪避: ${characterInfo.attributes.derived.dodge}</li>
+                                <li>暴击率: ${characterInfo.attributes.derived.criticalRate}%</li>
                             </ul>
                             <p><strong>已穿戴装备:</strong> ${characterInfo.equipment.length > 0 ? 
                                 characterInfo.equipment.map(item => `${item.name} (${item.type})`).join(', ') : 
