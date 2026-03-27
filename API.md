@@ -605,18 +605,35 @@
   "message": "跟脚刷新成功",
   "data": {
     "root": {
-      "name": "后天精怪",
-      "bonus": 0.45
+      "name": "先天神圣",
+      "bonus": 1.05,
+      "rankLevel": 5,
+      "rankColor": "#ffd700"
+    },
+    "base": {
+      "constitution": 5,
+      "agility": 5,
+      "luck": 5,
+      "wisdom": 5,
+      "freePoints": 20
     },
     "derived": {
-      "health": 73,
-      "mana": 36,
-      "spirit": 29,
-      "attack": 22,
-      "defense": 15,
-      "speed": 10.875,
-      "dodge": 5.8,
-      "criticalRate": 3.625
+      "health": 102,
+      "mana": 51,
+      "mental": 41,
+      "attack": 31,
+      "defense": 21,
+      "speed": 15.375,
+      "dodge": 8.2,
+      "criticalRate": 5.125
+    },
+    "cultivation": {
+      "isCultivating": false,
+      "efficiency": 1,
+      "baseCultivation": 10,
+      "rootBonus": 2.05,
+      "skillBonus": 1,
+      "realTimeEfficiency": 30.5
     }
   }
 }
