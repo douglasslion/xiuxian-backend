@@ -336,11 +336,17 @@
                 if (data.status === 'success') {
                     const characterInfo = data.data;
                     
-                    // 检查数据结构是否完整
-                    if (!characterInfo || !characterInfo.player) {
-                        content.innerHTML = '<div class="error">角色数据不完整</div>';
-                        return;
-                    }
+                    // 确保数据结构完整
+                    characterInfo = characterInfo || {};
+                    characterInfo.player = characterInfo.player || {};
+                    characterInfo.realm = characterInfo.realm || {};
+                    characterInfo.attributes = characterInfo.attributes || {};
+                    characterInfo.attributes.base = characterInfo.attributes.base || {};
+                    characterInfo.attributes.root = characterInfo.attributes.root || {};
+                    characterInfo.attributes.derived = characterInfo.attributes.derived || {};
+                    characterInfo.cultivation = characterInfo.cultivation || {};
+                    characterInfo.equipment = characterInfo.equipment || [];
+                    characterInfo.skills = characterInfo.skills || [];
                     
                     let html = `
                         <h3>角色详情</h3>
