@@ -336,45 +336,51 @@
                 if (data.status === 'success') {
                     const characterInfo = data.data;
                     
+                    // 检查数据结构是否完整
+                    if (!characterInfo || !characterInfo.player) {
+                        content.innerHTML = '<div class="error">角色数据不完整</div>';
+                        return;
+                    }
+                    
                     let html = `
                         <h3>角色详情</h3>
                         <div class="role-info">
-                            <p><strong>玩家ID:</strong> ${characterInfo.player.id}</p>
-                            <p><strong>角色名称:</strong> ${characterInfo.player.name}</p>
+                            <p><strong>玩家ID:</strong> ${characterInfo.player.id || '未知'}</p>
+                            <p><strong>角色名称:</strong> ${characterInfo.player.name || '未知'}</p>
                             <p><strong>头像:</strong> ${characterInfo.player.avatar ? 
                                 `<img src="${characterInfo.player.avatar}" width="100" height="100" />` : 
                                 '无头像'
                             }</p>
-                            <p><strong>境界:</strong> ${characterInfo.realm.realmName} ${characterInfo.realm.realmLevel}层</p>
-                            <p><strong>修为进度:</strong> ${characterInfo.realm.cultivationProgress}/${characterInfo.realm.cultivationCap} (${characterInfo.realm.progressPercentage}%)</p>
-                            <p><strong>跟脚:</strong> ${characterInfo.attributes.root.name} (${characterInfo.attributes.root.bonus * 100}% 加成)</p>
-                            <p><strong>修炼状态:</strong> ${characterInfo.cultivation.isCultivating ? '修炼中' : '未修炼'}</p>
-                            <p><strong>修炼效率:</strong> ${characterInfo.cultivation.efficiency}x</p>
+                            <p><strong>境界:</strong> ${characterInfo.realm ? `${characterInfo.realm.realmName || '未知'} ${characterInfo.realm.realmLevel || 0}层` : '未知'}</p>
+                            <p><strong>修为进度:</strong> ${characterInfo.realm ? `${characterInfo.realm.cultivationProgress || 0}/${characterInfo.realm.cultivationCap || 0} (${characterInfo.realm.progressPercentage || 0}%)` : '未知'}</p>
+                            <p><strong>跟脚:</strong> ${characterInfo.attributes && characterInfo.attributes.root ? `${characterInfo.attributes.root.name || '未知'} (${(characterInfo.attributes.root.bonus || 0) * 100}% 加成)` : '未知'}</p>
+                            <p><strong>修炼状态:</strong> ${characterInfo.cultivation ? (characterInfo.cultivation.isCultivating ? '修炼中' : '未修炼') : '未知'}</p>
+                            <p><strong>修炼效率:</strong> ${characterInfo.cultivation ? `${characterInfo.cultivation.efficiency || 0}x` : '未知'}</p>
                             <p><strong>基础属性:</strong></p>
                             <ul>
-                                <li>根骨: ${characterInfo.attributes.base.constitution}</li>
-                                <li>身法: ${characterInfo.attributes.base.agility}</li>
-                                <li>机缘: ${characterInfo.attributes.base.luck}</li>
-                                <li>悟性: ${characterInfo.attributes.base.wisdom}</li>
-                                <li>自由属性点: ${characterInfo.attributes.base.freePoints}</li>
+                                <li>根骨: ${characterInfo.attributes && characterInfo.attributes.base ? characterInfo.attributes.base.constitution || 0 : 0}</li>
+                                <li>身法: ${characterInfo.attributes && characterInfo.attributes.base ? characterInfo.attributes.base.agility || 0 : 0}</li>
+                                <li>机缘: ${characterInfo.attributes && characterInfo.attributes.base ? characterInfo.attributes.base.luck || 0 : 0}</li>
+                                <li>悟性: ${characterInfo.attributes && characterInfo.attributes.base ? characterInfo.attributes.base.wisdom || 0 : 0}</li>
+                                <li>自由属性点: ${characterInfo.attributes && characterInfo.attributes.base ? characterInfo.attributes.base.freePoints || 0 : 0}</li>
                             </ul>
                             <p><strong>衍生属性:</strong></p>
                             <ul>
-                                <li>气血: ${characterInfo.attributes.derived.health}</li>
-                                <li>灵力: ${characterInfo.attributes.derived.mana}</li>
-                                <li>神识: ${characterInfo.attributes.derived.mental}</li>
-                                <li>攻击: ${characterInfo.attributes.derived.attack}</li>
-                                <li>防御: ${characterInfo.attributes.derived.defense}</li>
-                                <li>速度: ${characterInfo.attributes.derived.speed}</li>
-                                <li>闪避: ${characterInfo.attributes.derived.dodge}</li>
-                                <li>暴击率: ${characterInfo.attributes.derived.criticalRate}%</li>
+                                <li>气血: ${characterInfo.attributes && characterInfo.attributes.derived ? characterInfo.attributes.derived.health || 0 : 0}</li>
+                                <li>灵力: ${characterInfo.attributes && characterInfo.attributes.derived ? characterInfo.attributes.derived.mana || 0 : 0}</li>
+                                <li>神识: ${characterInfo.attributes && characterInfo.attributes.derived ? characterInfo.attributes.derived.mental || 0 : 0}</li>
+                                <li>攻击: ${characterInfo.attributes && characterInfo.attributes.derived ? characterInfo.attributes.derived.attack || 0 : 0}</li>
+                                <li>防御: ${characterInfo.attributes && characterInfo.attributes.derived ? characterInfo.attributes.derived.defense || 0 : 0}</li>
+                                <li>速度: ${characterInfo.attributes && characterInfo.attributes.derived ? characterInfo.attributes.derived.speed || 0 : 0}</li>
+                                <li>闪避: ${characterInfo.attributes && characterInfo.attributes.derived ? characterInfo.attributes.derived.dodge || 0 : 0}</li>
+                                <li>暴击率: ${characterInfo.attributes && characterInfo.attributes.derived ? `${characterInfo.attributes.derived.criticalRate || 0}%` : '0%'}</li>
                             </ul>
-                            <p><strong>已穿戴装备:</strong> ${characterInfo.equipment.length > 0 ? 
-                                characterInfo.equipment.map(item => `${item.name} (${item.type})`).join(', ') : 
+                            <p><strong>已穿戴装备:</strong> ${characterInfo.equipment && characterInfo.equipment.length > 0 ? 
+                                characterInfo.equipment.map(item => `${item.name || '未知'} (${item.type || '未知'})`).join(', ') : 
                                 '无'
                             }</p>
-                            <p><strong>已学习功法:</strong> ${characterInfo.skills.length > 0 ? 
-                                characterInfo.skills.map(skill => `${skill.name} (${skill.rank})`).join(', ') : 
+                            <p><strong>已学习功法:</strong> ${characterInfo.skills && characterInfo.skills.length > 0 ? 
+                                characterInfo.skills.map(skill => `${skill.name || '未知'} (${skill.rank || '未知'})`).join(', ') : 
                                 '无'
                             }</p>
                         </div>
