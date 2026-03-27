@@ -387,7 +387,16 @@ exports.getCharacterInfo = async (req, res) => {
           rankLevel: rootConfig.getRootByName(attributes.root)?.rankLevel || 1,
           rankColor: rankColorConfig.getColorByLevel(rootConfig.getRootByName(attributes.root)?.rankLevel || 1)
         },
-        derived: attributes.derivedAttributes
+        derived: attributes.derivedAttributes || {
+          health: Math.floor((attributes.constitution || 0) * 10 * (1 + (attributes.rootBonus || 0))),
+          mana: Math.floor((attributes.wisdom || 0) * 5 * (1 + (attributes.rootBonus || 0))),
+          mental: Math.floor((attributes.wisdom || 0) * 4 * (1 + (attributes.rootBonus || 0))),
+          attack: Math.floor((attributes.constitution || 0) * 3 * (1 + (attributes.rootBonus || 0))),
+          defense: Math.floor((attributes.constitution || 0) * 2 * (1 + (attributes.rootBonus || 0))),
+          speed: (attributes.agility || 0) * 1.5 * (1 + (attributes.rootBonus || 0)),
+          dodge: (attributes.agility || 0) * 0.8 * (1 + (attributes.rootBonus || 0)),
+          criticalRate: (attributes.luck || 0) * 0.5 * (1 + (attributes.rootBonus || 0))
+        }
       },
       equipment: equipment.map(item => ({
         type: item.type,
@@ -404,14 +413,14 @@ exports.getCharacterInfo = async (req, res) => {
         baseCultivation: cultivation.baseCultivation,
         rootBonus: cultivation.rootBonus,
         skillBonus: cultivation.skillBonus,
-        realTimeEfficiency: cultivation.realTimeEfficiency
+        realTimeEfficiency: cultivation.realTimeEfficiency || cultivation.baseCultivation * (cultivation.rootBonus + cultivation.skillBonus)
       },
       realm: {
         realmName: realm.realmName,
         realmLevel: realm.realmLevel,
         cultivationProgress: realm.cultivationProgress,
         cultivationCap: realm.cultivationCap,
-        progressPercentage: realm.progressPercentage
+        progressPercentage: realm.progressPercentage || Math.min(Math.round((realm.cultivationProgress / realm.cultivationCap) * 100), 100)
       }
     };
 
