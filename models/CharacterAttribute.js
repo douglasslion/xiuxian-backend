@@ -57,13 +57,23 @@ characterAttributeSchema.virtual('derivedAttributes').get(function() {
   return {
     health: Math.floor(this.constitution * 10 * bonus),
     mana: Math.floor(this.wisdom * 5 * bonus),
-    spirit: Math.floor(this.wisdom * 4 * bonus),
+    mental: Math.floor(this.wisdom * 4 * bonus),
     attack: Math.floor(this.constitution * 3 * bonus),
     defense: Math.floor(this.constitution * 2 * bonus),
     speed: this.agility * 1.5 * bonus,
     dodge: this.agility * 0.8 * bonus,
     criticalRate: this.luck * 0.5 * bonus
   };
+});
+
+// 确保虚拟属性被序列化
+characterAttributeSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+  transform: function(doc, ret) {
+    delete ret._id;
+    return ret;
+  }
 });
 
 const CharacterAttribute = mongoose.model('CharacterAttribute', characterAttributeSchema);

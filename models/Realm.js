@@ -48,6 +48,16 @@ realmSchema.virtual('progressPercentage').get(function() {
   return Math.min(Math.round((this.cultivationProgress / this.cultivationCap) * 100), 100);
 });
 
+// 确保虚拟属性被序列化
+realmSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+  transform: function(doc, ret) {
+    delete ret._id;
+    return ret;
+  }
+});
+
 const Realm = mongoose.model('Realm', realmSchema);
 
 module.exports = Realm;

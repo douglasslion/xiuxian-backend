@@ -51,6 +51,16 @@ cultivationSchema.virtual('realTimeEfficiency').get(function() {
   return this.baseCultivation * (this.rootBonus + this.skillBonus);
 });
 
+// 确保虚拟属性被序列化
+cultivationSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+  transform: function(doc, ret) {
+    delete ret._id;
+    return ret;
+  }
+});
+
 const Cultivation = mongoose.model('Cultivation', cultivationSchema);
 
 module.exports = Cultivation;
