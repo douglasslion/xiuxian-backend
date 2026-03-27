@@ -693,15 +693,50 @@ exports.refreshRoot = async (req, res) => {
 
     await attributes.save();
 
+    // 获取修炼状态
+    let cultivation = await Cultivation.findOne({ playerId });
+    if (!cultivation) {
+      cultivation = new Cultivation({
+        playerId,
+        isCultivating: false,
+        efficiency: 1.0,
+        baseCultivation: 10,
+        rootBonus: 1.0,
+        skillBonus: 1.0
+      });
+      await cultivation.save();
+    }
+
+    // 更新修炼状态中的根骨加成
+    cultivation.rootBonus = 1 + attributes.rootBonus;
+    await cultivation.save();
+
     res.status(200).json({
       status: 'success',
       message: '跟脚刷新成功',
       data: {
         root: {
           name: attributes.root,
-          bonus: attributes.rootBonus
+          bonus: attributes.rootBonus,
+          rankLevel: rootConfig.getRootByName(attributes.root)?.rankLevel || 1,
+          rankColor: rankColorConfig.getColorByLevel(rootConfig.getRootByName(attributes.root)?.rankLevel || 1)
         },
-        derived: attributes.derivedAttributes
+        base: {
+          constitution: attributes.constitution,
+          agility: attributes.agility,
+          luck: attributes.luck,
+          wisdom: attributes.wisdom,
+          freePoints: attributes.freePoints
+        },
+        derived: attributes.derivedAttributes,
+        cultivation: {
+          isCultivating: cultivation.isCultivating,
+          efficiency: cultivation.efficiency,
+          baseCultivation: cultivation.baseCultivation,
+          rootBonus: cultivation.rootBonus,
+          skillBonus: cultivation.skillBonus,
+          realTimeEfficiency: cultivation.realTimeEfficiency || cultivation.baseCultivation * (cultivation.rootBonus + cultivation.skillBonus)
+        }
       }
     });
   } catch (error) {
