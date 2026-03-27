@@ -43,10 +43,12 @@ const connectDB = async () => {
 const userRoutes = require('./routes/users');
 const gameRoutes = require('./routes/game');
 const playerRoutes = require('./routes/player');
+const adminRoutes = require('./routes/admin');
 
 app.use('/api/users', userRoutes);
 app.use('/api/game', gameRoutes);
 app.use('/api/player', playerRoutes);
+app.use('/api/admin', adminRoutes);
 
 // 测试玩家ID API
 app.get('/api/test/new-id', async (req, res) => {

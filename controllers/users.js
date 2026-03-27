@@ -176,7 +176,7 @@ exports.createCharacter = async (req, res) => {
     const counter = await PlayerCounter.findOneAndUpdate(
       { counterName: 'playerId' },
       { $inc: { nextId: 1 }, $set: { updatedAt: new Date() } },
-      { new: true, upsert: true }
+      { new: true, upsert: true, setDefaultsOnInsert: true }
     );
     
     const playerId = (counter.nextId - 1).toString();
@@ -194,6 +194,67 @@ exports.createCharacter = async (req, res) => {
     // 更新用户的playerId
     user.playerId = playerId;
     await user.save();
+    
+    // 初始化默认游戏状态数据
+    const GameState = require('../models/GameState');
+    const Cultivation = require('../models/Cultivation');
+    const Realm = require('../models/Realm');
+    const CharacterAttribute = require('../models/CharacterAttribute');
+    const realmConfig = require('../config/realmConfig');
+    const rootConfig = require('../config/rootConfig');
+    const { randomDistributeAttributes } = require('../utils/attributeUtils');
+    
+    // 创建默认游戏状态
+    const gameState = new GameState({
+      playerId,
+      state: {
+        energy: 0,
+        fairyCrystal: 0,
+        spiritStone: 0,
+        isCultivating: false
+      },
+      lastSaveTime: new Date()
+    });
+    await gameState.save();
+    
+    // 创建默认修炼状态
+    const cultivation = new Cultivation({
+      playerId,
+      isCultivating: false,
+      efficiency: 1.0,
+      baseCultivation: 10,
+      rootBonus: 1.0,
+      skillBonus: 1.0
+    });
+    await cultivation.save();
+    
+    // 创建默认境界信息（默认从凡人开始）
+    const defaultRealmIndex = 0; // 凡人
+    const defaultRealm = realmConfig.getRealmInfo(defaultRealmIndex);
+    const defaultCap = realmConfig.calculateCap(defaultRealmIndex, 1);
+    
+    const realm = new Realm({
+      playerId,
+      realmName: defaultRealm.name,
+      realmIndex: defaultRealmIndex,
+      realmLevel: 1,
+      cultivationProgress: 0,
+      cultivationCap: defaultCap
+    });
+    await realm.save();
+    
+    // 创建默认角色属性
+    const initialAttributes = randomDistributeAttributes();
+    const randomRoot = rootConfig.getRandomRoot();
+    
+    const attributes = new CharacterAttribute({
+      playerId,
+      ...initialAttributes,
+      freePoints: 20,
+      root: randomRoot.name,
+      rootBonus: randomRoot.bonus
+    });
+    await attributes.save();
     
     res.status(200).json({
       status: 'success',

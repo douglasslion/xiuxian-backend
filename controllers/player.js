@@ -28,7 +28,7 @@ exports.getNewPlayerId = async (req, res) => {
     const counter = await PlayerCounter.findOneAndUpdate(
       { counterName: 'playerId' },
       { $inc: { nextId: 1 }, $set: { updatedAt: new Date() } },
-      { new: true, upsert: true }
+      { new: true, upsert: true, setDefaultsOnInsert: true }
     );
 
     console.log('计数器查询结果:', counter);
@@ -65,10 +65,32 @@ exports.getPlayerState = async (req, res) => {
       return res.status(400).json({ status: 'error', message: '缺少玩家ID' });
     }
 
-    const gameState = await GameState.findOne({ playerId });
+    let gameState = await GameState.findOne({ playerId });
 
     if (!gameState) {
-      return res.status(404).json({ status: 'error', message: '游戏状态不存在' });
+      // 如果游戏状态不存在，返回默认状态
+      const defaultState = {
+        energy: 0,
+        fairyCrystal: 0,
+        spiritStone: 0,
+        isCultivating: false
+      };
+      
+      // 创建默认游戏状态
+      gameState = new GameState({
+        playerId,
+        state: defaultState,
+        lastSaveTime: new Date()
+      });
+      await gameState.save();
+      
+      return res.status(200).json({
+        status: 'success',
+        data: {
+          gameState: defaultState,
+          playerId: playerId
+        }
+      });
     }
 
     res.status(200).json({

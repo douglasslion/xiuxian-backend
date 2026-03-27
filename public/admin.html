@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修仙游戏后台管理</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+        
+        .nav {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            background-color: #3498db;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .nav button {
+            padding: 10px 20px;
+            background-color: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .nav button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .nav button.active {
+            background-color: rgba(255, 255, 255, 0.3);
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            background-color: white;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tab-content.hidden {
+            display: none;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .error {
+            text-align: center;
+            padding: 20px;
+            color: #e74c3c;
+        }
+        
+        .role-info {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>修仙游戏后台管理</h1>
+        
+        <div class="nav">
+            <button class="active" data-tab="users">用户管理</button>
+            <button data-tab="characters">角色管理</button>
+            <button data-tab="game-states">游戏状态</button>
+        </div>
+        
+        <div class="tab-content" id="users-tab">
+            <h2>用户列表</h2>
+            <div id="users-content">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+        
+        <div class="tab-content hidden" id="characters-tab">
+            <h2>角色列表</h2>
+            <div id="characters-content">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+        
+        <div class="tab-content hidden" id="game-states-tab">
+            <h2>游戏状态</h2>
+            <div id="game-states-content">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 切换标签
+        document.querySelectorAll('.nav button').forEach(button => {
+            button.addEventListener('click', () => {
+                // 移除所有活动状态
+                document.querySelectorAll('.nav button').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+                
+                // 添加当前活动状态
+                button.classList.add('active');
+                const tabId = button.dataset.tab + '-tab';
+                document.getElementById(tabId).classList.remove('hidden');
+                
+                // 加载对应内容
+                if (tabId === 'users-tab') {
+                    loadUsers();
+                } else if (tabId === 'characters-tab') {
+                    loadCharacters();
+                } else if (tabId === 'game-states-tab') {
+                    loadGameStates();
+                }
+            });
+        });
+        
+        // 加载用户列表
+        async function loadUsers() {
+            const content = document.getElementById('users-content');
+            content.innerHTML = '<div class="loading">加载中...</div>';
+            
+            try {
+                const response = await fetch('/api/admin/users');
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    const users = data.data;
+                    if (users.length === 0) {
+                        content.innerHTML = '<div class="error">暂无用户数据</div>';
+                        return;
+                    }
+                    
+                    let html = `
+                        <table>
+                            <tr>
+                                <th>ID</th>
+                                <th>用户名</th>
+                                <th>玩家ID</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                    `;
+                    
+                    users.forEach(user => {
+                        html += `
+                            <tr>
+                                <td>${user._id}</td>
+                                <td>${user.username}</td>
+                                <td>${user.playerId || '未创建角色'}</td>
+                                <td>${new Date(user.createdAt).toLocaleString()}</td>
+                                <td>
+                                    ${user.playerId ? 
+                                        `<button onclick="viewCharacter('${user.playerId}')">查看角色</button>` : 
+                                        '<span>无角色</span>'
+                                    }
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    
+                    html += '</table>';
+                    content.innerHTML = html;
+                } else {
+                    content.innerHTML = `<div class="error">加载失败: ${data.message}</div>`;
+                }
+            } catch (error) {
+                content.innerHTML = `<div class="error">加载失败: ${error.message}</div>`;
+            }
+        }
+        
+        // 加载角色列表
+        async function loadCharacters() {
+            const content = document.getElementById('characters-content');
+            content.innerHTML = '<div class="loading">加载中...</div>';
+            
+            try {
+                const response = await fetch('/api/admin/characters');
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    const characters = data.data;
+                    if (characters.length === 0) {
+                        content.innerHTML = '<div class="error">暂无角色数据</div>';
+                        return;
+                    }
+                    
+                    let html = `
+                        <table>
+                            <tr>
+                                <th>玩家ID</th>
+                                <th>角色名称</th>
+                                <th>头像</th>
+                                <th>最后登录时间</th>
+                                <th>操作</th>
+                            </tr>
+                    `;
+                    
+                    characters.forEach(character => {
+                        html += `
+                            <tr>
+                                <td>${character.playerId}</td>
+                                <td>${character.name}</td>
+                                <td>${character.avatar ? 
+                                    `<img src="${character.avatar}" width="50" height="50" />` : 
+                                    '无头像'
+                                }</td>
+                                <td>${new Date(character.lastLoginAt).toLocaleString()}</td>
+                                <td>
+                                    <button onclick="viewCharacterDetails('${character.playerId}')">查看详情</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    
+                    html += '</table>';
+                    content.innerHTML = html;
+                } else {
+                    content.innerHTML = `<div class="error">加载失败: ${data.message}</div>`;
+                }
+            } catch (error) {
+                content.innerHTML = `<div class="error">加载失败: ${error.message}</div>`;
+            }
+        }
+        
+        // 加载游戏状态
+        async function loadGameStates() {
+            const content = document.getElementById('game-states-content');
+            content.innerHTML = '<div class="loading">加载中...</div>';
+            
+            try {
+                const response = await fetch('/api/admin/game-states');
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    const gameStates = data.data;
+                    if (gameStates.length === 0) {
+                        content.innerHTML = '<div class="error">暂无游戏状态数据</div>';
+                        return;
+                    }
+                    
+                    let html = `
+                        <table>
+                            <tr>
+                                <th>玩家ID</th>
+                                <th>体力</th>
+                                <th>仙晶</th>
+                                <th>灵石</th>
+                                <th>是否修炼中</th>
+                                <th>最后保存时间</th>
+                            </tr>
+                    `;
+                    
+                    gameStates.forEach(gameState => {
+                        html += `
+                            <tr>
+                                <td>${gameState.playerId}</td>
+                                <td>${gameState.state.energy || 0}</td>
+                                <td>${gameState.state.fairyCrystal || 0}</td>
+                                <td>${gameState.state.spiritStone || 0}</td>
+                                <td>${gameState.state.isCultivating ? '是' : '否'}</td>
+                                <td>${new Date(gameState.lastSaveTime).toLocaleString()}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    html += '</table>';
+                    content.innerHTML = html;
+                } else {
+                    content.innerHTML = `<div class="error">加载失败: ${data.message}</div>`;
+                }
+            } catch (error) {
+                content.innerHTML = `<div class="error">加载失败: ${error.message}</div>`;
+            }
+        }
+        
+        // 查看角色详情
+        async function viewCharacterDetails(playerId) {
+            const content = document.getElementById('characters-content');
+            content.innerHTML = `<div class="loading">加载角色详情中...</div>`;
+            
+            try {
+                const response = await fetch(`/api/player/character-info?id=${playerId}`);
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    const characterInfo = data.data;
+                    
+                    let html = `
+                        <h3>角色详情</h3>
+                        <div class="role-info">
+                            <p><strong>玩家ID:</strong> ${characterInfo.player.id}</p>
+                            <p><strong>角色名称:</strong> ${characterInfo.player.name}</p>
+                            <p><strong>头像:</strong> ${characterInfo.player.avatar ? 
+                                `<img src="${characterInfo.player.avatar}" width="100" height="100" />` : 
+                                '无头像'
+                            }</p>
+                            <p><strong>境界:</strong> ${characterInfo.realm.realmName} ${characterInfo.realm.realmLevel}层</p>
+                            <p><strong>修为进度:</strong> ${characterInfo.realm.cultivationProgress}/${characterInfo.realm.cultivationCap} (${characterInfo.realm.percentage}%)</p>
+                            <p><strong>跟脚:</strong> ${characterInfo.root.name} (${characterInfo.root.bonus * 100}% 加成)</p>
+                            <p><strong>修炼状态:</strong> ${characterInfo.cultivation.isCultivating ? '修炼中' : '未修炼'}</p>
+                            <p><strong>修炼效率:</strong> ${characterInfo.cultivation.efficiency}x</p>
+                            <p><strong>基础属性:</strong></p>
+                            <ul>
+                                <li>根骨: ${characterInfo.attributes.constitution}</li>
+                                <li>身法: ${characterInfo.attributes.agility}</li>
+                                <li>机缘: ${characterInfo.attributes.luck}</li>
+                                <li>悟性: ${characterInfo.attributes.wisdom}</li>
+                                <li>自由属性点: ${characterInfo.attributes.freePoints}</li>
+                            </ul>
+                            <p><strong>衍生属性:</strong></p>
+                            <ul>
+                                <li>气血: ${characterInfo.derivedAttributes.health}</li>
+                                <li>灵力: ${characterInfo.derivedAttributes.mana}</li>
+                                <li>神识: ${characterInfo.derivedAttributes.mental}</li>
+                                <li>攻击: ${characterInfo.derivedAttributes.attack}</li>
+                                <li>防御: ${characterInfo.derivedAttributes.defense}</li>
+                                <li>速度: ${characterInfo.derivedAttributes.speed}</li>
+                                <li>闪避: ${characterInfo.derivedAttributes.dodge}</li>
+                                <li>暴击率: ${characterInfo.derivedAttributes.criticalRate}%</li>
+                            </ul>
+                            <p><strong>已穿戴装备:</strong> ${characterInfo.equipment.length > 0 ? 
+                                characterInfo.equipment.map(item => `${item.name} (${item.type})`).join(', ') : 
+                                '无'
+                            }</p>
+                            <p><strong>已学习功法:</strong> ${characterInfo.skills.length > 0 ? 
+                                characterInfo.skills.map(skill => `${skill.name} (${skill.rank})`).join(', ') : 
+                                '无'
+                            }</p>
+                        </div>
+                        <button onclick="loadCharacters()">返回角色列表</button>
+                    `;
+                    
+                    content.innerHTML = html;
+                } else {
+                    content.innerHTML = `<div class="error">加载失败: ${data.message}</div>`;
+                }
+            } catch (error) {
+                content.innerHTML = `<div class="error">加载失败: ${error.message}</div>`;
+            }
+        }
+        
+        // 查看角色
+        function viewCharacter(playerId) {
+            // 切换到角色标签并加载对应角色
+            document.querySelector('[data-tab="characters"]').click();
+            setTimeout(() => {
+                viewCharacterDetails(playerId);
+            }, 100);
+        }
+        
+        // 初始加载用户列表
+        loadUsers();
+    </script>
+</body>
+</html>
