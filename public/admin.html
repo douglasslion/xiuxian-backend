@@ -334,10 +334,9 @@
                 const data = await response.json();
                 
                 if (data.status === 'success') {
-                    const characterInfo = data.data;
+                    let characterInfo = data.data || {};
                     
                     // 确保数据结构完整
-                    characterInfo = characterInfo || {};
                     characterInfo.player = characterInfo.player || {};
                     characterInfo.realm = characterInfo.realm || {};
                     characterInfo.attributes = characterInfo.attributes || {};
