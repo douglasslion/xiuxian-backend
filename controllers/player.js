@@ -65,10 +65,21 @@ exports.getPlayerState = async (req, res) => {
       return res.status(400).json({ status: 'error', message: '缺少玩家ID' });
     }
 
-    let gameState = await GameState.findOne({ playerId });
+    // 检查并创建玩家记录
+    let player = await Player.findOne({ playerId });
+    if (!player) {
+      player = new Player({
+        playerId,
+        name: '修仙者',
+        avatar: '/avatars/nan_shaolinsi.png',
+        lastLoginAt: new Date()
+      });
+      await player.save();
+    }
 
+    // 检查并创建游戏状态
+    let gameState = await GameState.findOne({ playerId });
     if (!gameState) {
-      // 如果游戏状态不存在，返回默认状态
       const defaultState = {
         energy: 0,
         fairyCrystal: 0,
@@ -76,21 +87,60 @@ exports.getPlayerState = async (req, res) => {
         isCultivating: false
       };
       
-      // 创建默认游戏状态
       gameState = new GameState({
         playerId,
         state: defaultState,
         lastSaveTime: new Date()
       });
       await gameState.save();
-      
-      return res.status(200).json({
-        status: 'success',
-        data: {
-          gameState: defaultState,
-          playerId: playerId
-        }
+    }
+
+    // 检查并创建修炼状态
+    let cultivation = await Cultivation.findOne({ playerId });
+    if (!cultivation) {
+      cultivation = new Cultivation({
+        playerId,
+        isCultivating: false,
+        efficiency: 1.0,
+        baseCultivation: 10,
+        rootBonus: 1.0,
+        skillBonus: 1.0
       });
+      await cultivation.save();
+    }
+
+    // 检查并创建境界信息
+    let realm = await Realm.findOne({ playerId });
+    if (!realm) {
+      const defaultRealmIndex = 0; // 凡人
+      const defaultRealm = realmConfig.getRealmInfo(defaultRealmIndex);
+      const defaultCap = realmConfig.calculateCap(defaultRealmIndex, 1);
+      
+      realm = new Realm({
+        playerId,
+        realmName: defaultRealm.name,
+        realmIndex: defaultRealmIndex,
+        realmLevel: 1,
+        cultivationProgress: 0,
+        cultivationCap: defaultCap
+      });
+      await realm.save();
+    }
+
+    // 检查并创建角色属性
+    let attributes = await CharacterAttribute.findOne({ playerId });
+    if (!attributes) {
+      const initialAttributes = randomDistributeAttributes();
+      const randomRoot = rootConfig.getRandomRoot();
+      
+      attributes = new CharacterAttribute({
+        playerId,
+        ...initialAttributes,
+        freePoints: 20,
+        root: randomRoot.name,
+        rootBonus: randomRoot.bonus
+      });
+      await attributes.save();
     }
 
     res.status(200).json({
@@ -153,9 +203,58 @@ exports.savePlayerState = async (req, res) => {
       player = new Player({
         playerId,
         name: '修仙者',
+        avatar: '/avatars/nan_shaolinsi.png',
         lastLoginAt: new Date()
       });
       await player.save();
+    }
+
+    // 检查并创建修炼状态
+    let cultivation = await Cultivation.findOne({ playerId });
+    if (!cultivation) {
+      cultivation = new Cultivation({
+        playerId,
+        isCultivating: false,
+        efficiency: 1.0,
+        baseCultivation: 10,
+        rootBonus: 1.0,
+        skillBonus: 1.0
+      });
+      await cultivation.save();
+    }
+
+    // 检查并创建境界信息
+    let realm = await Realm.findOne({ playerId });
+    if (!realm) {
+      const defaultRealmIndex = 0; // 凡人
+      const defaultRealm = realmConfig.getRealmInfo(defaultRealmIndex);
+      const defaultCap = realmConfig.calculateCap(defaultRealmIndex, 1);
+      
+      realm = new Realm({
+        playerId,
+        realmName: defaultRealm.name,
+        realmIndex: defaultRealmIndex,
+        realmLevel: 1,
+        cultivationProgress: 0,
+        cultivationCap: defaultCap
+      });
+      await realm.save();
+    }
+
+    // 检查并创建角色属性
+    let attributes = await CharacterAttribute.findOne({ playerId });
+    if (!attributes) {
+      const initialAttributes = randomDistributeAttributes();
+      const randomRoot = rootConfig.getRandomRoot();
+      
+      attributes = new CharacterAttribute({
+        playerId,
+        ...initialAttributes,
+        freePoints: 20,
+        root: randomRoot.name,
+        rootBonus: randomRoot.bonus
+      });
+      await attributes.save();
     }
 
     res.status(200).json({
