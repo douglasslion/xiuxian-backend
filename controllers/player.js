@@ -571,6 +571,23 @@ exports.startCultivation = async (req, res) => {
       return res.status(400).json({ status: 'error', message: '缺少玩家ID' });
     }
 
+    // 获取角色属性，以获取正确的rootBonus
+    let attributes = await CharacterAttribute.findOne({ playerId });
+    if (!attributes) {
+      // 如果不存在，创建默认角色属性
+      const initialAttributes = randomDistributeAttributes();
+      const randomRoot = rootConfig.getRandomRoot();
+      
+      attributes = new CharacterAttribute({
+        playerId,
+        ...initialAttributes,
+        freePoints: 20,
+        root: randomRoot.name,
+        rootBonus: randomRoot.bonus
+      });
+      await attributes.save();
+    }
+
     // 获取或创建修炼状态
     let cultivation = await Cultivation.findOne({ playerId });
     if (!cultivation) {
@@ -579,7 +596,7 @@ exports.startCultivation = async (req, res) => {
         isCultivating: true,
         efficiency: 1.0,
         baseCultivation: 10,
-        rootBonus: 1.0,
+        rootBonus: 1 + attributes.rootBonus,
         skillBonus: 1.0,
         startTime: new Date()
       });
@@ -587,6 +604,8 @@ exports.startCultivation = async (req, res) => {
       cultivation.isCultivating = true;
       cultivation.startTime = new Date();
       cultivation.endTime = null;
+      // 更新rootBonus以确保与角色属性一致
+      cultivation.rootBonus = 1 + attributes.rootBonus;
     }
 
     await cultivation.save();
@@ -598,6 +617,19 @@ exports.startCultivation = async (req, res) => {
         ...gameState.state,
         isCultivating: true
       };
+      await gameState.save();
+    } else {
+      // 如果GameState不存在，创建一个新的
+      gameState = new GameState({
+        playerId,
+        state: {
+          energy: 0,
+          fairyCrystal: 0,
+          spiritStone: 0,
+          isCultivating: true
+        },
+        lastSaveTime: new Date()
+      });
       await gameState.save();
     }
 
@@ -645,6 +677,19 @@ exports.stopCultivation = async (req, res) => {
         ...gameState.state,
         isCultivating: false
       };
+      await gameState.save();
+    } else {
+      // 如果GameState不存在，创建一个新的
+      gameState = new GameState({
+        playerId,
+        state: {
+          energy: 0,
+          fairyCrystal: 0,
+          spiritStone: 0,
+          isCultivating: false
+        },
+        lastSaveTime: new Date()
+      });
       await gameState.save();
     }
 
