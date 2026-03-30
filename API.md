@@ -489,6 +489,7 @@
       "baseCultivation": 10,
       "rootBonus": 1,
       "skillBonus": 1,
+      "expInterval": 30,
       "realTimeEfficiency": 20
     },
     "realm": {
@@ -496,7 +497,8 @@
       "realmLevel": 1,
       "cultivationProgress": 0,
       "cultivationCap": 100,
-      "progressPercentage": 0
+      "progressPercentage": 0,
+      "canBreakthrough": false
     }
   }
 }
@@ -722,6 +724,65 @@
         }
       }
     ]
+  }
+}
+```
+
+#### 3.14 突破境界
+
+- **请求方式**: POST
+- **接口路径**: `/api/player/realm/breakthrough`
+- **请求参数**:
+  | 参数名 | 类型 | 必填 | 描述 |
+  |-------|------|------|------|
+  | playerId | string | 是 | 玩家ID |
+
+- **响应示例**:
+
+**突破成功**
+
+```json
+{
+  "status": "success",
+  "message": "突破到 后天 成功",
+  "data": {
+    "success": true,
+    "realmName": "后天",
+    "realmLevel": 1,
+    "cultivationProgress": 50,
+    "cultivationCap": 500
+  }
+}
+```
+
+**突破失败**
+
+```json
+{
+  "status": "success",
+  "message": "突破失败，扣除部分经验",
+  "data": {
+    "success": false,
+    "realmName": "凡人",
+    "realmLevel": 1,
+    "cultivationProgress": 90,
+    "cultivationCap": 100
+  }
+}
+```
+
+**已达到最高境界**
+
+```json
+{
+  "status": "success",
+  "message": "已达到最高境界，无法继续突破",
+  "data": {
+    "success": false,
+    "realmName": "圣人",
+    "realmLevel": 10,
+    "cultivationProgress": 200000000,
+    "cultivationCap": 200000000
   }
 }
 ```
