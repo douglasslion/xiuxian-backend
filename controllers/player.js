@@ -564,6 +564,16 @@ exports.startCultivation = async (req, res) => {
 
     await cultivation.save();
 
+    // 同时更新GameState中的isCultivating状态
+    let gameState = await GameState.findOne({ playerId });
+    if (gameState) {
+      gameState.state = {
+        ...gameState.state,
+        isCultivating: true
+      };
+      await gameState.save();
+    }
+
     res.status(200).json({
       status: 'success',
       message: '开始修炼成功',
@@ -600,6 +610,16 @@ exports.stopCultivation = async (req, res) => {
     cultivation.endTime = new Date();
 
     await cultivation.save();
+
+    // 同时更新GameState中的isCultivating状态
+    let gameState = await GameState.findOne({ playerId });
+    if (gameState) {
+      gameState.state = {
+        ...gameState.state,
+        isCultivating: false
+      };
+      await gameState.save();
+    }
 
     res.status(200).json({
       status: 'success',
