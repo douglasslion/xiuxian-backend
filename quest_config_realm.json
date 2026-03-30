@@ -1,0 +1,781 @@
+{
+  "game_name": "青云灵运",
+  "desc": "从零岁开始的文字修仙游戏",
+  "realms": [
+    "凡人",
+    "后天",
+    "先天",
+    "炼气",
+    "筑基",
+    "金丹",
+    "元婴",
+    "化神",
+    "炼虚",
+    "合体",
+    "大乘",
+    "地仙",
+    "天仙",
+    "真仙",
+    "金仙",
+    "太乙金仙",
+    "大罗金仙",
+    "准圣",
+    "圣人"
+  ],
+  "quests": [
+    {
+      "id": 1,
+      "chapter": 1,
+      "unlock_realm": "凡人",
+      "age": 0,
+      "title": "凡尘降生",
+      "content": "你降生在青云山脚下农户家中，夜有微光，天降祥和。先天命格已成，将决定你一生仙途。",
+      "options": [
+        {
+          "text": "福缘深厚",
+          "desc": "天生气运加身，奇遇自来，逢凶化吉。",
+          "reward": {
+            "奇遇概率": "+40%",
+            "保命概率": "+30%"
+          },
+          "set_fate": "福缘深厚",
+          "next_quest": 2
+        },
+        {
+          "text": "灵息自生",
+          "desc": "先天灵体，呼吸便可引灵气入体。",
+          "reward": {
+            "修炼速度": "+15%",
+            "灵气亲和": "+20%"
+          },
+          "set_fate": "灵息自生",
+          "next_quest": 2
+        },
+        {
+          "text": "道心稳固",
+          "desc": "心智通明，不惑不乱，不堕心魔。",
+          "reward": {
+            "道心": "+20",
+            "心魔抵抗": "+20%"
+          },
+          "set_fate": "道心稳固",
+          "next_quest": 2
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "chapter": 1,
+      "unlock_realm": "凡人",
+      "age": 1,
+      "title": "稚子择路",
+      "content": "你在院中爬行，懵懂间被三股气息牵引。一步之差，仙凡殊途。",
+      "options": [
+        {
+          "text": "爬向老槐树，捡发光小石子",
+          "desc": "石子温润灵光内敛，似有灵性。",
+          "reward": {
+            "道具": [
+              "聚灵石"
+            ]
+          },
+          "set_branch": "散修线",
+          "next_quest": 3
+        },
+        {
+          "text": "爬向厨房，吃杂粮糕",
+          "desc": "糕点香甜，气血随之温暖流转。",
+          "reward": {
+            "体质": "+8"
+          },
+          "set_branch": "凡武线",
+          "next_quest": 4
+        },
+        {
+          "text": "走向村口背剑修士",
+          "desc": "青衫修士气机清正，引你不由自主靠近。",
+          "reward": {
+            "道具": [
+              "仙缘玉牌"
+            ]
+          },
+          "set_branch": "青云主线",
+          "next_quest": 5
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "chapter": 1,
+      "unlock_realm": "凡人",
+      "only_branch": "散修线",
+      "title": "灵石自醒",
+      "content": "怀中聚灵石日夜吐纳灵气，潜移默化间引气入体。",
+      "options": [
+        {
+          "text": "顺其自然，感悟灵气",
+          "reward": {
+            "境界": "炼气",
+            "功法": [
+              "基础吐纳诀"
+            ]
+          },
+          "next_quest": 6
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "chapter": 1,
+      "unlock_realm": "凡人",
+      "only_branch": "凡武线",
+      "title": "凡体初成",
+      "content": "你体魄强健，远超常人，被村中武师收入门下。",
+      "options": [
+        {
+          "text": "勤练拳脚，打磨肉身",
+          "reward": {
+            "体质": "+10",
+            "道具": [
+              "凡铁剑"
+            ]
+          },
+          "next_quest": 7
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "chapter": 1,
+      "unlock_realm": "凡人",
+      "only_branch": "青云主线",
+      "title": "三年之约",
+      "content": "青衫剑修凌玄如约而至，观你根骨，决意收为亲传弟子，赐道号：灵运。",
+      "options": [
+        {
+          "text": "拜师青云，踏上仙途",
+          "reward": {
+            "境界": "炼气",
+            "功法": [
+              "青云基础剑经"
+            ],
+            "装备": [
+              "青云道袍"
+            ]
+          },
+          "next_quest": 8
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "chapter": 1,
+      "unlock_realm": "炼气",
+      "only_branch": "散修线",
+      "title": "山野修行",
+      "content": "你无门无派，独自在山林间吐纳修行。",
+      "options": [
+        {
+          "text": "潜心吐纳，稳步修炼",
+          "reward": {
+            "境界": "炼气"
+          },
+          "next_quest": 9
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "chapter": 1,
+      "unlock_realm": "凡人",
+      "only_branch": "凡武线",
+      "title": "凡人武成",
+      "content": "你已修成凡人武道，气血旺盛，隐隐有破界之兆。",
+      "options": [
+        {
+          "text": "凝练气血，冲击灵境",
+          "reward": {
+            "境界": "炼气"
+          },
+          "next_quest": 10
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "chapter": 1,
+      "unlock_realm": "炼气",
+      "only_branch": "青云主线",
+      "title": "道途抉择",
+      "content": "师父令你选定主修方向，奠定修行根基。",
+      "options": [
+        {
+          "text": "主修剑道",
+          "reward": {
+            "攻击": "+20%",
+            "暴击": "+10%"
+          },
+          "set_major": "剑道",
+          "next_quest": 11
+        },
+        {
+          "text": "主修符箓阵法",
+          "reward": {
+            "控制": "+25%",
+            "闪避": "+15%"
+          },
+          "set_major": "符箓",
+          "next_quest": 11
+        },
+        {
+          "text": "主修丹器",
+          "reward": {
+            "炼丹成功率": "+20%",
+            "炼器成功率": "+20%"
+          },
+          "set_major": "丹器",
+          "next_quest": 11
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "chapter": 1,
+      "unlock_realm": "炼气",
+      "only_branch": "散修线",
+      "title": "流浪仙师",
+      "content": "一位流浪修士路过，察觉你身怀灵根，愿收你为徒。",
+      "options": [
+        {
+          "text": "拜入其门下，学习仙法",
+          "reward": {
+            "灵石": 50
+          },
+          "next_quest": 12
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "chapter": 1,
+      "unlock_realm": "炼气",
+      "only_branch": "凡武线",
+      "title": "以武入道",
+      "content": "你以武道真意引动灵气，正式踏入修仙之路。",
+      "options": [
+        {
+          "text": "稳固境界，继续修炼",
+          "reward": {
+            "境界": "炼气"
+          },
+          "next_quest": 13
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "chapter": 1,
+      "unlock_realm": "炼气",
+      "only_branch": "青云主线",
+      "title": "外门试炼",
+      "content": "宗门举行外门试炼，考验弟子心性与实力。",
+      "options": [
+        {
+          "text": "黑风林斩狼",
+          "reward": {
+            "道具": [
+              "狼妖内丹"
+            ]
+          },
+          "next_quest": 14
+        },
+        {
+          "text": "落霞谷采灵草",
+          "reward": {
+            "材料": [
+              "灵草×20"
+            ]
+          },
+          "next_quest": 15
+        },
+        {
+          "text": "主峰听道",
+          "reward": {
+            "道心": "+10"
+          },
+          "next_quest": 15
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "chapter": 2,
+      "unlock_realm": "炼气",
+      "only_branch": "散修线",
+      "title": "门派浩劫",
+      "content": "小门派遭魔道袭击，山门破碎，你被迫逃亡。",
+      "options": [
+        {
+          "text": "保全自身，伺机突围",
+          "reward": {
+            "功法": [
+              "残霄剑经"
+            ]
+          },
+          "next_quest": 16
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "chapter": 2,
+      "unlock_realm": "炼气",
+      "only_branch": "凡武线",
+      "title": "江湖历练",
+      "content": "你行走凡间江湖，斩妖除邪，积累正气。",
+      "options": [
+        {
+          "text": "行侠仗义，守护一方",
+          "reward": {
+            "正气": "+30"
+          },
+          "next_quest": 17
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "chapter": 1,
+      "unlock_realm": "炼气",
+      "only_branch": "青云主线",
+      "title": "林中异宝",
+      "content": "斩狼之后，林中金光一闪，似有至宝出世。",
+      "options": [
+        {
+          "text": "探寻金光",
+          "reward": {
+            "本命": [
+              "灵犀剑胎"
+            ]
+          },
+          "next_quest": 15
+        },
+        {
+          "text": "前往呼救",
+          "reward": {
+            "羁绊": "苏婉"
+          },
+          "next_quest": 15
+        },
+        {
+          "text": "回应同门",
+          "reward": {
+            "声望": "+100"
+          },
+          "next_quest": 15
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "chapter": 2,
+      "unlock_realm": "炼气",
+      "only_branch": "青云主线",
+      "title": "师父传功",
+      "content": "师父见你修行日进，传你青云正统绝学。",
+      "options": [
+        {
+          "text": "修炼《青云剑典·上篇》",
+          "reward": {
+            "剑技": [
+              "流云刺"
+            ],
+            "修炼速度": "+25%"
+          },
+          "next_quest": 18
+        },
+        {
+          "text": "进入剑冢感悟剑意",
+          "reward": {
+            "剑意": "+50"
+          },
+          "next_quest": 18
+        },
+        {
+          "text": "下山历练清风城",
+          "reward": {
+            "银两": 500
+          },
+          "next_quest": 18
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "chapter": 2,
+      "unlock_realm": "炼气",
+      "only_branch": "散修线",
+      "title": "散修筑基",
+      "content": "你修为圆满，无门无派，独自冲击筑基境。",
+      "options": [
+        {
+          "text": "闭关苦修，强行突破",
+          "reward": {
+            "境界": "筑基"
+          },
+          "next_quest": 19
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "chapter": 2,
+      "unlock_realm": "炼气",
+      "only_branch": "凡武线",
+      "title": "武修筑基",
+      "content": "你以武证道，肉身强横，欲打破凡界桎梏。",
+      "options": [
+        {
+          "text": "以气血冲关，筑基成仙",
+          "reward": {
+            "境界": "筑基",
+            "体质": "+20"
+          },
+          "next_quest": 20
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "chapter": 2,
+      "unlock_realm": "炼气",
+      "only_branch": "青云主线",
+      "title": "冲击筑基",
+      "content": "你炼气大圆满，根基稳固，可冲击筑基大道。",
+      "options": [
+        {
+          "text": "闭关稳破",
+          "desc": "水到渠成，无副作用",
+          "reward": {
+            "境界": "筑基"
+          },
+          "next_quest": 21
+        },
+        {
+          "text": "丹药破境",
+          "desc": "快速突破，有损道心",
+          "reward": {
+            "境界": "筑基",
+            "道心": "-5"
+          },
+          "next_quest": 21
+        },
+        {
+          "text": "以战破境",
+          "desc": "生死间突破桎梏",
+          "reward": {
+            "境界": "筑基",
+            "攻击": "+10%"
+          },
+          "next_quest": 21
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "chapter": 3,
+      "unlock_realm": "筑基",
+      "only_branch": "散修线",
+      "title": "古城秘境",
+      "content": "你误入上古修士古城，机缘暗藏，危机四伏。",
+      "options": [
+        {
+          "text": "深入秘境，探寻机缘",
+          "reward": {
+            "道具": [
+              "上古法器碎片"
+            ]
+          },
+          "next_quest": 22
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "chapter": 3,
+      "unlock_realm": "筑基",
+      "only_branch": "凡武线",
+      "title": "武心问道",
+      "content": "你筑基已成，肉身之力更胜往昔，欲凝金丹。",
+      "options": [
+        {
+          "text": "以武心化丹",
+          "reward": {
+            "境界": "金丹"
+          },
+          "next_quest": 23
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "chapter": 3,
+      "unlock_realm": "筑基",
+      "only_branch": "青云主线",
+      "title": "心魔渡劫",
+      "content": "冲击金丹前，心魔滋生，考验道心。",
+      "options": [
+        {
+          "text": "以剑破魔",
+          "reward": {
+            "攻击": "+20%"
+          },
+          "next_quest": 24
+        },
+        {
+          "text": "以福化劫",
+          "reward": {
+            "气运": "+30"
+          },
+          "next_quest": 24
+        },
+        {
+          "text": "以心镇魔",
+          "reward": {
+            "道心": "+100"
+          },
+          "next_quest": 24
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "chapter": 3,
+      "unlock_realm": "筑基",
+      "only_branch": "散修线",
+      "title": "散修结丹",
+      "content": "你独自感悟大道，欲凝结金丹。",
+      "options": [
+        {
+          "text": "凝神结丹，以力证道",
+          "reward": {
+            "境界": "金丹"
+          },
+          "next_quest": 25
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "chapter": 4,
+      "unlock_realm": "金丹",
+      "only_branch": "凡武线",
+      "title": "武祖元婴",
+      "content": "你肉身成圣，一拳可破山岳，欲凝元婴。",
+      "options": [
+        {
+          "text": "肉身化婴，武破虚空",
+          "reward": {
+            "境界": "元婴"
+          },
+          "next_quest": 26
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "chapter": 3,
+      "unlock_realm": "筑基",
+      "only_branch": "青云主线",
+      "title": "冲击金丹",
+      "content": "你心境圆满，可冲击金丹大道。",
+      "options": [
+        {
+          "text": "稳扎稳打",
+          "reward": {
+            "境界": "金丹"
+          },
+          "next_quest": 27
+        },
+        {
+          "text": "天材地宝",
+          "reward": {
+            "境界": "金丹"
+          },
+          "next_quest": 27
+        },
+        {
+          "text": "以剑证道",
+          "reward": {
+            "境界": "金丹"
+          },
+          "next_quest": 27
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "chapter": 4,
+      "unlock_realm": "金丹",
+      "only_branch": "散修线",
+      "title": "散修元婴",
+      "content": "你逍遥独行，感悟天地，欲凝结元婴。",
+      "options": [
+        {
+          "text": "感悟虚空，凝结元婴",
+          "reward": {
+            "境界": "元婴"
+          },
+          "next_quest": 28
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "chapter": 5,
+      "unlock_realm": "元婴",
+      "only_branch": "凡武线",
+      "title": "武仙临世",
+      "content": "你武心通神，肉身合道，直达化神。",
+      "options": [
+        {
+          "text": "以武破界，登临化神",
+          "reward": {
+            "境界": "化神"
+          },
+          "next_quest": 29
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "chapter": 4,
+      "unlock_realm": "金丹",
+      "only_branch": "青云主线",
+      "title": "元婴问道",
+      "content": "你金丹圆满，欲化婴成真。",
+      "options": [
+        {
+          "text": "闭关化婴",
+          "reward": {
+            "境界": "元婴"
+          },
+          "next_quest": 30
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "chapter": 5,
+      "unlock_realm": "元婴",
+      "only_branch": "散修线",
+      "title": "散修化神",
+      "content": "你感悟虚空法则，欲渡劫化神。",
+      "options": [
+        {
+          "text": "引劫洗躯，成就化神",
+          "reward": {
+            "境界": "化神"
+          },
+          "next_quest": 31
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "chapter": 6,
+      "unlock_realm": "大乘",
+      "only_branch": "凡武线",
+      "title": "武仙飞升",
+      "content": "你以武成仙，天劫临身，欲破界飞升。",
+      "options": [
+        {
+          "text": "以肉身硬撼天劫",
+          "reward": {
+            "结局": "战武福仙/灵脉仙尊/无尘道君"
+          },
+          "next_quest": -1
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "chapter": 5,
+      "unlock_realm": "元婴",
+      "only_branch": "青云主线",
+      "title": "化神天劫",
+      "content": "天地法则降临，化神雷劫将至。",
+      "options": [
+        {
+          "text": "以剑破劫",
+          "reward": {
+            "境界": "化神"
+          },
+          "next_quest": 32
+        },
+        {
+          "text": "以福挡劫",
+          "reward": {
+            "境界": "化神"
+          },
+          "next_quest": 32
+        },
+        {
+          "text": "以道接劫",
+          "reward": {
+            "境界": "化神"
+          },
+          "next_quest": 32
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "chapter": 6,
+      "unlock_realm": "大乘",
+      "only_branch": "散修线",
+      "title": "散修飞升",
+      "content": "你逍遥一生，打破虚空，渡劫成仙。",
+      "options": [
+        {
+          "text": "破空飞升",
+          "reward": {
+            "结局": "逍遥福仙/万灵真仙/心道仙君"
+          },
+          "next_quest": -1
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "chapter": 6,
+      "unlock_realm": "大乘",
+      "only_branch": "青云主线",
+      "title": "青云飞升",
+      "content": "九重飞升劫至，仙门大开，凡途圆满。",
+      "options": [
+        {
+          "text": "以剑破劫",
+          "reward": {
+            "结局": "青云灵仙"
+          },
+          "next_quest": -1
+        },
+        {
+          "text": "以福挡劫",
+          "reward": {
+            "结局": "福运仙君"
+          },
+          "next_quest": -1
+        },
+        {
+          "text": "以道接劫",
+          "reward": {
+            "结局": "青云道仙"
+          },
+          "next_quest": -1
+        }
+      ]
+    }
+  ]
+}

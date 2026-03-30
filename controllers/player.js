@@ -59,11 +59,14 @@ exports.getNewPlayerId = async (req, res) => {
  */
 exports.getPlayerState = async (req, res) => {
   try {
-    const { playerId } = req.params;
+    const { playerId: rawPlayerId } = req.params;
 
-    if (!playerId) {
+    if (!rawPlayerId) {
       return res.status(400).json({ status: 'error', message: '缺少玩家ID' });
     }
+
+    // 确保playerId是字符串类型，与其他接口保持一致
+    const playerId = String(rawPlayerId);
 
     // 检查并创建玩家记录
     let player = await Player.findOne({ playerId });
@@ -164,11 +167,14 @@ exports.savePlayerState = async (req, res) => {
     console.log('=== 保存玩家游戏状态请求 ===');
     console.log('请求体:', JSON.stringify(req.body, null, 2));
 
-    const { playerId, gameState, lastSaveTime } = req.body;
+    const { playerId: rawPlayerId, gameState, lastSaveTime } = req.body;
 
-    if (!playerId || !gameState) {
+    if (!rawPlayerId || !gameState) {
       return res.status(400).json({ status: 'error', message: '缺少玩家ID或游戏状态' });
     }
+
+    // 确保playerId是字符串类型，与其他接口保持一致
+    const playerId = String(rawPlayerId);
 
     // 查找或创建游戏状态
     let state = await GameState.findOne({ playerId });
@@ -375,8 +381,11 @@ exports.getCharacterInfo = async (req, res) => {
       return res.status(400).json({ status: 'error', message: '缺少玩家ID' });
     }
 
+    // 确保playerId是字符串类型，与其他接口保持一致
+    const playerId = String(id);
+
     // 获取玩家基本信息
-    const player = await Player.findOne({ playerId: id });
+    const player = await Player.findOne({ playerId });
     if (!player) {
       return res.status(404).json({ status: 'error', message: '玩家不存在' });
     }
@@ -389,14 +398,14 @@ exports.getCharacterInfo = async (req, res) => {
     }
 
     // 获取玩家装备
-    const equipment = await Equipment.find({ playerId: id });
+    const equipment = await Equipment.find({ playerId });
 
     // 获取修炼状态
-    let cultivation = await Cultivation.findOne({ playerId: id });
+    let cultivation = await Cultivation.findOne({ playerId });
     if (!cultivation) {
       // 如果不存在，创建默认修炼状态
       cultivation = new Cultivation({
-        playerId: id,
+        playerId,
         isCultivating: false,
         efficiency: 1.0,
         baseCultivation: 10,
@@ -407,11 +416,11 @@ exports.getCharacterInfo = async (req, res) => {
     }
 
     // 获取游戏状态
-    let gameState = await GameState.findOne({ playerId: id });
+    let gameState = await GameState.findOne({ playerId });
     if (!gameState) {
       // 如果不存在，创建默认游戏状态
       gameState = new GameState({
-        playerId: id,
+        playerId,
         state: {
           energy: 0,
           fairyCrystal: 0,
@@ -433,7 +442,7 @@ exports.getCharacterInfo = async (req, res) => {
     }
 
     // 获取境界信息
-    let realm = await Realm.findOne({ playerId: id });
+    let realm = await Realm.findOne({ playerId });
     if (!realm) {
       // 如果不存在，创建默认境界信息（默认从凡人开始）
       const defaultRealmIndex = 0; // 凡人
@@ -441,7 +450,7 @@ exports.getCharacterInfo = async (req, res) => {
       const defaultCap = realmConfig.calculateCap(defaultRealmIndex, 1);
       
       realm = new Realm({
-        playerId: id,
+        playerId,
         realmName: defaultRealm.name,
         realmIndex: defaultRealmIndex,
         realmLevel: 1,
@@ -452,7 +461,7 @@ exports.getCharacterInfo = async (req, res) => {
     }
 
     // 获取角色属性
-    let attributes = await CharacterAttribute.findOne({ playerId: id });
+    let attributes = await CharacterAttribute.findOne({ playerId });
     if (!attributes) {
       // 随机分配初始属性点
       const initialAttributes = randomDistributeAttributes();
@@ -460,7 +469,7 @@ exports.getCharacterInfo = async (req, res) => {
       const randomRoot = rootConfig.getRandomRoot();
       
       attributes = new CharacterAttribute({
-        playerId: id,
+        playerId,
         ...initialAttributes,
         freePoints: 20,
         root: randomRoot.name,
@@ -470,7 +479,7 @@ exports.getCharacterInfo = async (req, res) => {
     }
 
     // 获取玩家的功法列表
-    const skills = await Skill.find({ playerId: id });
+    const skills = await Skill.find({ playerId });
     const skillList = skills.map(skill => {
       const skillInfo = skillConfig.getSkillById(skill.skillId);
       const proficiencyInfo = skillConfig.getProficiencyInfo(skill.proficiency);
@@ -565,11 +574,14 @@ exports.getCharacterInfo = async (req, res) => {
  */
 exports.startCultivation = async (req, res) => {
   try {
-    const { playerId } = req.body;
+    const { playerId: rawPlayerId } = req.body;
 
-    if (!playerId) {
+    if (!rawPlayerId) {
       return res.status(400).json({ status: 'error', message: '缺少玩家ID' });
     }
+
+    // 确保playerId是字符串类型，与其他接口保持一致
+    const playerId = String(rawPlayerId);
 
     // 获取角色属性，以获取正确的rootBonus
     let attributes = await CharacterAttribute.findOne({ playerId });
@@ -653,11 +665,14 @@ exports.startCultivation = async (req, res) => {
  */
 exports.stopCultivation = async (req, res) => {
   try {
-    const { playerId } = req.body;
+    const { playerId: rawPlayerId } = req.body;
 
-    if (!playerId) {
+    if (!rawPlayerId) {
       return res.status(400).json({ status: 'error', message: '缺少玩家ID' });
     }
+
+    // 确保playerId是字符串类型，与其他接口保持一致
+    const playerId = String(rawPlayerId);
 
     // 获取修炼状态
     const cultivation = await Cultivation.findOne({ playerId });
@@ -712,11 +727,14 @@ exports.stopCultivation = async (req, res) => {
  */
 exports.allocateAttributePoints = async (req, res) => {
   try {
-    const { playerId, constitution = 0, agility = 0, luck = 0, wisdom = 0 } = req.body;
+    const { playerId: rawPlayerId, constitution = 0, agility = 0, luck = 0, wisdom = 0 } = req.body;
 
-    if (!playerId) {
+    if (!rawPlayerId) {
       return res.status(400).json({ status: 'error', message: '缺少玩家ID' });
     }
+
+    // 确保playerId是字符串类型，与其他接口保持一致
+    const playerId = String(rawPlayerId);
 
     // 获取角色属性
     const attributes = await CharacterAttribute.findOne({ playerId });
@@ -765,11 +783,14 @@ exports.allocateAttributePoints = async (req, res) => {
  */
 exports.refreshRoot = async (req, res) => {
   try {
-    const { playerId } = req.body;
+    const { playerId: rawPlayerId } = req.body;
 
-    if (!playerId) {
+    if (!rawPlayerId) {
       return res.status(400).json({ status: 'error', message: '缺少玩家ID' });
     }
+
+    // 确保playerId是字符串类型，与其他接口保持一致
+    const playerId = String(rawPlayerId);
 
     // 获取角色属性
     const attributes = await CharacterAttribute.findOne({ playerId });
@@ -842,11 +863,14 @@ exports.refreshRoot = async (req, res) => {
  */
 exports.learnSkill = async (req, res) => {
   try {
-    const { playerId, skillId } = req.body;
+    const { playerId: rawPlayerId, skillId } = req.body;
 
-    if (!playerId || !skillId) {
+    if (!rawPlayerId || !skillId) {
       return res.status(400).json({ status: 'error', message: '缺少玩家ID或功法ID' });
     }
+
+    // 确保playerId是字符串类型，与其他接口保持一致
+    const playerId = String(rawPlayerId);
 
     // 检查功法是否存在
     const skillInfo = skillConfig.getSkillById(skillId);
@@ -891,11 +915,14 @@ exports.learnSkill = async (req, res) => {
  */
 exports.upgradeSkill = async (req, res) => {
   try {
-    const { playerId, skillId } = req.body;
+    const { playerId: rawPlayerId, skillId } = req.body;
 
-    if (!playerId || !skillId) {
+    if (!rawPlayerId || !skillId) {
       return res.status(400).json({ status: 'error', message: '缺少玩家ID或功法ID' });
     }
+
+    // 确保playerId是字符串类型，与其他接口保持一致
+    const playerId = String(rawPlayerId);
 
     // 检查玩家是否学习了该功法
     let skill = await Skill.findOne({ playerId, skillId });
