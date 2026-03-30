@@ -40,7 +40,7 @@ async function grantCultivationExperience() {
         const experience = calculateExperience(cultivation);
         
         // 检查是否可以增加经验
-        if (canAddExperience(realm, player.isVip)) {
+        if (canAddExperience(realm, player.isVip, experience)) {
           // 增加经验
           realm.cultivationProgress += experience;
           
@@ -48,9 +48,10 @@ async function grantCultivationExperience() {
           if (realm.cultivationProgress >= realm.cultivationCap) {
             // 处理突破逻辑
             await handleBreakthrough(realm, player);
+          } else {
+            // 保存经验
+            await realm.save();
           }
-          
-          await realm.save();
           console.log(`玩家 ${cultivation.playerId} 获得 ${experience} 修炼经验`);
         } else {
           console.log(`玩家 ${cultivation.playerId} 经验已达上限，不再增加`);
@@ -98,13 +99,13 @@ function calculateExperience(cultivation) {
 /**
  * 检查是否可以增加经验
  */
-function canAddExperience(realm, isVip) {
+function canAddExperience(realm, isVip, experience) {
   if (isVip) {
     // VIP玩家可以积累到当前等级上限的10倍
-    return realm.cultivationProgress < realm.cultivationCap * 10;
+    return realm.cultivationProgress + experience <= realm.cultivationCap * 10;
   } else {
     // 非VIP玩家只能积累到当前等级上限
-    return realm.cultivationProgress < realm.cultivationCap;
+    return realm.cultivationProgress + experience <= realm.cultivationCap;
   }
 }
 
@@ -133,6 +134,9 @@ async function handleBreakthrough(realm, player) {
     realm.cultivationProgress = realm.cultivationCap;
     console.log(`玩家 ${player.playerId} 已达到最高境界`);
   }
+  
+  // 保存突破后的境界信息
+  await realm.save();
 }
 
 /**
