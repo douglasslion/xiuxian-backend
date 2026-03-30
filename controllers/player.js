@@ -406,6 +406,32 @@ exports.getCharacterInfo = async (req, res) => {
       await cultivation.save();
     }
 
+    // 获取游戏状态
+    let gameState = await GameState.findOne({ playerId: id });
+    if (!gameState) {
+      // 如果不存在，创建默认游戏状态
+      gameState = new GameState({
+        playerId: id,
+        state: {
+          energy: 0,
+          fairyCrystal: 0,
+          spiritStone: 0,
+          isCultivating: cultivation.isCultivating
+        },
+        lastSaveTime: new Date()
+      });
+      await gameState.save();
+    } else {
+      // 确保gameState中的isCultivating与cultivation中的保持一致
+      if (gameState.state.isCultivating !== cultivation.isCultivating) {
+        gameState.state = {
+          ...gameState.state,
+          isCultivating: cultivation.isCultivating
+        };
+        await gameState.save();
+      }
+    }
+
     // 获取境界信息
     let realm = await Realm.findOne({ playerId: id });
     if (!realm) {
@@ -520,7 +546,8 @@ exports.getCharacterInfo = async (req, res) => {
         cultivationProgress: realm.cultivationProgress,
         cultivationCap: realm.cultivationCap,
         progressPercentage: realm.progressPercentage || Math.min(Math.round((realm.cultivationProgress / realm.cultivationCap) * 100), 100)
-      }
+      },
+      gameState: gameState.state
     };
 
     res.status(200).json({
