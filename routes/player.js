@@ -45,4 +45,7 @@ router.post('/skills/upgrade', playerController.upgradeSkill);
 // 获取玩家功法列表
 router.get('/skills', playerController.getPlayerSkills);
 
+// 突破境界
+router.post('/realm/breakthrough', playerController.breakthroughRealm);
+
 module.exports = router;

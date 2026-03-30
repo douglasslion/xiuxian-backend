@@ -566,7 +566,8 @@ exports.getCharacterInfo = async (req, res) => {
         realmLevel: realm.realmLevel,
         cultivationProgress: realm.cultivationProgress,
         cultivationCap: realm.cultivationCap,
-        progressPercentage: realm.progressPercentage || Math.min(Math.round((realm.cultivationProgress / realm.cultivationCap) * 100), 100)
+        progressPercentage: realm.progressPercentage || Math.min(Math.round((realm.cultivationProgress / realm.cultivationCap) * 100), 100),
+        canBreakthrough: realm.cultivationProgress >= realm.cultivationCap
       },
       gameState: gameState.state
     };
@@ -977,6 +978,115 @@ exports.upgradeSkill = async (req, res) => {
   } catch (error) {
     console.error('提升功法熟练度失败:', error);
     res.status(500).json({ status: 'error', message: '提升功法熟练度失败' });
+  }
+};
+
+/**
+ * 突破境界
+ */
+exports.breakthroughRealm = async (req, res) => {
+  try {
+    const { playerId: rawPlayerId } = req.body;
+
+    if (!rawPlayerId) {
+      return res.status(400).json({ status: 'error', message: '缺少玩家ID' });
+    }
+
+    // 确保playerId是字符串类型，与其他接口保持一致
+    const playerId = String(rawPlayerId);
+
+    // 获取玩家信息
+    const player = await Player.findOne({ playerId });
+    if (!player) {
+      return res.status(404).json({ status: 'error', message: '玩家不存在' });
+    }
+
+    // 获取境界信息
+    let realm = await Realm.findOne({ playerId });
+    if (!realm) {
+      return res.status(404).json({ status: 'error', message: '境界信息不存在' });
+    }
+
+    // 检查经验是否达到上限
+    if (realm.cultivationProgress < realm.cultivationCap) {
+      return res.status(400).json({ status: 'error', message: '经验未达到突破要求' });
+    }
+
+    // 获取突破失败概率
+    const failureRate = realmConfig.getBreakthroughFailureRate(realm.realmIndex);
+    
+    // 计算是否突破成功
+    const isSuccess = Math.random() > failureRate;
+
+    if (isSuccess) {
+      // 突破成功
+      const nextRealmIndex = realm.realmIndex + 1;
+      const nextRealm = realmConfig.getRealmInfo(nextRealmIndex);
+      
+      if (nextRealm) {
+        // 有下一个境界
+        // 计算剩余经验
+        const remainingExp = realm.cultivationProgress - realm.cultivationCap;
+        
+        // 更新境界信息
+        realm.realmIndex = nextRealmIndex;
+        realm.realmName = nextRealm.name;
+        realm.realmLevel = 1;
+        realm.cultivationCap = realmConfig.calculateCap(nextRealmIndex, 1);
+        realm.cultivationProgress = remainingExp;
+        
+        await realm.save();
+        
+        console.log(`玩家 ${playerId} 突破到 ${nextRealm.name} 成功`);
+        
+        res.status(200).json({
+          status: 'success',
+          message: `突破到 ${nextRealm.name} 成功`,
+          data: {
+            success: true,
+            realmName: nextRealm.name,
+            realmLevel: 1,
+            cultivationProgress: remainingExp,
+            cultivationCap: realm.cultivationCap
+          }
+        });
+      } else {
+        // 已达到最高境界
+        res.status(200).json({
+          status: 'success',
+          message: '已达到最高境界，无法继续突破',
+          data: {
+            success: false,
+            realmName: realm.realmName,
+            realmLevel: realm.realmLevel,
+            cultivationProgress: realm.cultivationProgress,
+            cultivationCap: realm.cultivationCap
+          }
+        });
+      }
+    } else {
+      // 突破失败，扣除部分经验（扣除当前经验的10%）
+      const expDeduction = Math.floor(realm.cultivationProgress * 0.1);
+      realm.cultivationProgress = Math.max(realm.cultivationCap - expDeduction, realm.cultivationCap * 0.8);
+      await realm.save();
+      
+      console.log(`玩家 ${playerId} 突破失败，扣除 ${expDeduction} 经验`);
+      
+      res.status(200).json({
+        status: 'success',
+        message: '突破失败，扣除部分经验',
+        data: {
+          success: false,
+          realmName: realm.realmName,
+          realmLevel: realm.realmLevel,
+          cultivationProgress: realm.cultivationProgress,
+          cultivationCap: realm.cultivationCap
+        }
+      });
+    }
+  } catch (error) {
+    console.error('突破境界失败:', error);
+    res.status(500).json({ status: 'error', message: '突破境界失败' });
   }
 };
 
