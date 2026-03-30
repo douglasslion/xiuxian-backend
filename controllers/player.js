@@ -1007,9 +1007,19 @@ exports.breakthroughRealm = async (req, res) => {
       return res.status(404).json({ status: 'error', message: '境界信息不存在' });
     }
 
+    // 添加调试信息
+    console.log(`玩家 ${playerId} 突破请求: cultivationProgress=${realm.cultivationProgress}, cultivationCap=${realm.cultivationCap}`);
+
     // 检查经验是否达到上限
     if (realm.cultivationProgress < realm.cultivationCap) {
-      return res.status(400).json({ status: 'error', message: '经验未达到突破要求' });
+      return res.status(400).json({ 
+        status: 'error', 
+        message: '经验未达到突破要求',
+        data: {
+          cultivationProgress: realm.cultivationProgress,
+          cultivationCap: realm.cultivationCap
+        }
+      });
     }
 
     // 获取突破失败概率
