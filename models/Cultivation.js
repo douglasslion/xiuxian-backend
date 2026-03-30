@@ -41,6 +41,10 @@ const cultivationSchema = new mongoose.Schema({
   endTime: {
     type: Date
   },
+  // 上次发放经验的时间
+  lastGrantTime: {
+    type: Date
+  },
   createdAt: {
     type: Date,
     default: Date.now

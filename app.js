@@ -91,6 +91,11 @@ const PORT = process.env.PORT || 8002;
 const startServer = async () => {
   try {
     await connectDB();
+    
+    // 启动修炼任务
+    const cultivationTask = require('./utils/cultivationTask');
+    cultivationTask.startCultivationTask();
+    
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`服务运行在 0.0.0.0:${PORT}`);
     });

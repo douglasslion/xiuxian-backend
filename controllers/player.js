@@ -623,12 +623,14 @@ exports.startCultivation = async (req, res) => {
         rootBonus: 1 + attributes.rootBonus,
         skillBonus: 1.0,
         expInterval: 30,
-        startTime: new Date()
+        startTime: new Date(),
+        lastGrantTime: new Date()
       });
     } else {
       cultivation.isCultivating = true;
       cultivation.startTime = new Date();
       cultivation.endTime = null;
+      cultivation.lastGrantTime = new Date();
       // 更新rootBonus以确保与角色属性一致
       cultivation.rootBonus = 1 + attributes.rootBonus;
       // 确保expInterval有值

@@ -25,6 +25,15 @@ const playerSchema = new mongoose.Schema({
   lastLoginAt: {
     type: Date,
     default: Date.now
+  },
+  // VIP状态
+  isVip: {
+    type: Boolean,
+    default: false
+  },
+  // VIP到期时间
+  vipExpireTime: {
+    type: Date
   }
 });
 
