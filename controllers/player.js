@@ -500,6 +500,15 @@ exports.getCharacterInfo = async (req, res) => {
       };
     });
 
+    // 确保gameState中的isCultivating与cultivation中的保持一致
+    if (gameState.state.isCultivating !== cultivation.isCultivating) {
+      gameState.state = {
+        ...gameState.state,
+        isCultivating: cultivation.isCultivating
+      };
+      await gameState.save();
+    }
+
     // 构建响应数据
     const characterInfo = {
       player: {
