@@ -107,7 +107,8 @@ exports.getPlayerState = async (req, res) => {
         efficiency: 1.0,
         baseCultivation: 10,
         rootBonus: 1.0,
-        skillBonus: 1.0
+        skillBonus: 1.0,
+        expInterval: 30
       });
       await cultivation.save();
     }
@@ -410,7 +411,8 @@ exports.getCharacterInfo = async (req, res) => {
         efficiency: 1.0,
         baseCultivation: 10,
         rootBonus: 1.0,
-        skillBonus: 1.0
+        skillBonus: 1.0,
+        expInterval: 30
       });
       await cultivation.save();
     }
@@ -556,6 +558,7 @@ exports.getCharacterInfo = async (req, res) => {
         baseCultivation: cultivation.baseCultivation,
         rootBonus: cultivation.rootBonus,
         skillBonus: cultivation.skillBonus,
+        expInterval: cultivation.expInterval || 30,
         realTimeEfficiency: cultivation.realTimeEfficiency || cultivation.baseCultivation * (cultivation.rootBonus + cultivation.skillBonus)
       },
       realm: {
@@ -619,6 +622,7 @@ exports.startCultivation = async (req, res) => {
         baseCultivation: 10,
         rootBonus: 1 + attributes.rootBonus,
         skillBonus: 1.0,
+        expInterval: 30,
         startTime: new Date()
       });
     } else {
@@ -627,6 +631,10 @@ exports.startCultivation = async (req, res) => {
       cultivation.endTime = null;
       // 更新rootBonus以确保与角色属性一致
       cultivation.rootBonus = 1 + attributes.rootBonus;
+      // 确保expInterval有值
+      if (!cultivation.expInterval) {
+        cultivation.expInterval = 30;
+      }
     }
 
     await cultivation.save();

@@ -30,6 +30,11 @@ const cultivationSchema = new mongoose.Schema({
     type: Number,
     default: 1.0
   },
+  // 经验获取间隔（秒）
+  expInterval: {
+    type: Number,
+    default: 30
+  },
   startTime: {
     type: Date
   },
