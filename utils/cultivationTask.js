@@ -17,11 +17,6 @@ async function grantCultivationExperience() {
     
     for (const cultivation of cultivatingPlayers) {
       try {
-        // 检查是否到了发放经验的时间
-        if (!shouldGrantExperience(cultivation)) {
-          continue;
-        }
-        
         // 获取玩家信息
         const player = await Player.findOne({ playerId: cultivation.playerId });
         if (!player) {
@@ -36,8 +31,19 @@ async function grantCultivationExperience() {
           continue;
         }
         
-        // 计算本次应获得的经验
+        // 检查是否已经达到经验上限
+        // 计算如果获得经验后是否会超过上限
         const experience = calculateExperience(cultivation);
+        if (!canAddExperience(realm, player.isVip, experience) && realm.cultivationProgress >= realm.cultivationCap) {
+          // 经验已达上限，不再检查时间差，直接跳过
+          // console.log(`玩家 ${cultivation.playerId} 经验已达上限，跳过处理`);
+          continue;
+        }
+        
+        // 检查是否到了发放经验的时间
+        if (!shouldGrantExperience(cultivation)) {
+          continue;
+        }
         
         // 计算增加经验后的值
         const newProgress = realm.cultivationProgress + experience;
