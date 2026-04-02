@@ -78,11 +78,17 @@ function shouldGrantExperience(cultivation) {
   
   if (!cultivation.lastGrantTime) {
     // 第一次发放
+    console.log(`玩家 ${cultivation.playerId} 第一次发放经验`);
     return true;
   }
   
   // 计算距离上次发放经验的时间差（秒）
   const timeDiff = (now - cultivation.lastGrantTime) / 1000;
+  
+  // 添加调试信息
+  if (cultivation.playerId === "4") {
+    console.log(`玩家 ${cultivation.playerId} 时间差: ${timeDiff.toFixed(2)}秒, 间隔: ${expInterval}秒, 是否应该发放: ${timeDiff >= expInterval}`);
+  }
   
   // 如果时间差大于等于经验获取间隔，则发放经验
   return timeDiff >= expInterval;
