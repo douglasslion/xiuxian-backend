@@ -53,25 +53,33 @@ async function grantCultivationExperience() {
           // 增加经验
           realm.cultivationProgress = newProgress;
           
-          // 检查是否可以突破境界
+          // 检查是否达到突破条件
           if (realm.cultivationProgress >= realm.cultivationCap) {
-            // 处理突破逻辑
-            await handleBreakthrough(realm, player);
+            // VIP玩家自动突破，非VIP玩家等待手动突破
+            if (player.isVip) {
+              // VIP玩家自动突破
+              await handleBreakthrough(realm, player);
+              console.log(`玩家 ${cultivation.playerId} 获得 ${experience} 修炼经验（VIP自动突破）`);
+            } else {
+              // 非VIP玩家：经验达到上限，保存但不自动突破
+              await realm.save();
+              console.log(`玩家 ${cultivation.playerId} 获得 ${experience} 修炼经验（达到上限，等待突破）`);
+            }
           } else {
             // 保存经验
             await realm.save();
+            console.log(`玩家 ${cultivation.playerId} 获得 ${experience} 修炼经验`);
           }
-          console.log(`玩家 ${cultivation.playerId} 获得 ${experience} 修炼经验`);
         } else if (realm.cultivationProgress < realm.cultivationCap) {
           // 非VIP玩家：经验未达上限，但加上本次经验会超过上限
-          // 只增加到上限
+          // 只增加到上限，等待手动突破
           const actualExperience = realm.cultivationCap - realm.cultivationProgress;
           realm.cultivationProgress = realm.cultivationCap;
           
-          // 处理突破逻辑
-          await handleBreakthrough(realm, player);
+          // 保存经验，但不自动突破
+          await realm.save();
           
-          console.log(`玩家 ${cultivation.playerId} 获得 ${actualExperience} 修炼经验（达到上限）`);
+          console.log(`玩家 ${cultivation.playerId} 获得 ${actualExperience} 修炼经验（达到上限，等待突破）`);
         } else {
           console.log(`玩家 ${cultivation.playerId} 经验已达上限，不再增加`);
         }
